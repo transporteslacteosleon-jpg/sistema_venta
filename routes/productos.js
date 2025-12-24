@@ -24,19 +24,25 @@ router.post('/productos', async (req, res) => {
     res.status(500).json('Error interno al registrar el producto.');
   }
 });
+//buscar productos
+router.get('/productos/buscar', async (req, res) => {
+    const termino = req.query.q;
 
-router.get('/buscar', async (req, res) => {
-  try { // << AÑADIR TRY
-    const q = `%${req.query.q}%`;
-    const { rows } = await pool.query(
-      // ... (consulta SQL)
-      [q]
-    );
-    res.json(rows);
-  } catch (error) { // << AÑADIR CATCH
-    console.error('Error al buscar producto:', error);
-    res.status(500).json([]); // Devuelve un array vacío en caso de fallo
-  }
+    if (!termino) {
+        return res.json([]);
+    }
+
+    try {
+        // Buscamos por código O por nombre usando ILIKE para ignorar mayúsculas/minúsculas
+        const { rows } = await pool.query(
+            'SELECT * FROM productos WHERE codigo ILIKE $1 OR nombre ILIKE $1 LIMIT 10',
+            [`%${termino}%`]
+        );
+        res.json(rows);
+    } catch (error) {
+        console.error('Error en búsqueda de productos:', error);
+        res.status(500).json({ error: 'Error interno en la búsqueda' });
+    }
 });
 
 module.exports = router;

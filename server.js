@@ -7,13 +7,16 @@ const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
-
+// ... otras importaciones
+app.use('/api', require('./routes/auth')); 
 app.use('/api', require('./routes/dashboard'));
 app.use('/api', require('./routes/listas'));
 app.use('/api', require('./routes/productos'));
 app.use('/api', require('./routes/movimientos'));
 app.use('/api', require('./routes/stock'));
 app.use('/api', require('./routes/reportes'));
+app.use('/api', require('./routes/ventas'));
+app.use('/api', require('./routes/clientes'));
 
 app.listen(port, () => { 
   console.log(`✅ API corriendo en http://localhost:${process.env.PORT}`);

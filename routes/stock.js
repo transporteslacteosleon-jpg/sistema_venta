@@ -1,5 +1,6 @@
-const router = require('express').Router();
-const db = require('../db');
+const express = require('express');
+const router = express.Router();
+const pool = require('../db'); // conexión PostgreSQL
 
 router.get('/stock', async (_, res) => {
   try{

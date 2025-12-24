@@ -7,7 +7,21 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<script src="frontend.js"></script>
+
+<div id="login-overlay" class="login-overlay">
+  
+  <div class="login-box">
+    <h2>Lácteos León - Acceso</h2>
+    <input type="text" id="login-user" placeholder="Usuario" onkeypress="if(event.key==='Enter') handleLogin()">
+    <input type="password" id="login-pass" placeholder="Contraseña" onkeypress="if(event.key==='Enter') handleLogin()">
+    <button class="btn btn-primary" onclick="handleLogin()">Entrar</button>
+    <div id="login-msg"></div>
+  </div>
+</div>
+
+<div id="main-app" style="display: none;">
+
+
 <div class="app-container">
   <nav class="sidebar">
     <div class="sidebar-header">
@@ -17,6 +31,8 @@
       <li class="nav-item"><a class="nav-link active" onclick="showTab('dashboard', event)">📊 Dashboard</a></li>
       <li class="nav-item"><a class="nav-link" onclick="showTab('productos', event)">📦 Nuevo producto</a></li>
       <li class="nav-item"><a class="nav-link" onclick="showTab('movimientos', event)">📋 Movimientos</a></li>
+      <li class="nav-item"><a class="nav-link" onclick="showTab('seccion-ventas', event); obtenerProximoNumeroDocumento()">💰 Registrar Venta</a></li>
+      <li class="nav-item"><a class="nav-link" onclick="showTab('seccion-clientes', event)">👥 Clientes</a></li>
       <li class="nav-item"><a class="nav-link" onclick="showTab('inventario', event)">📊 Inventario</a></li>
       <li class="nav-item"><a class="nav-link" onclick="showTab('reportes', event)">📈 Reportes</a></li>
       <li class="nav-item"><a class="nav-link" onclick="showTab('buscar', event)">🔍 Buscar</a></li>
@@ -42,6 +58,60 @@
       </div>
     </div>
   </div>
+</section>
+<!-- ventas -->
+<section id="seccion-ventas" class="tab-content">
+  <div class="card">
+    <div class="card-header">Generar Factura / Boleta</div>
+    <div class="card-body">
+      <div class="form-group">
+       <label>N° Documento</label><input type="text" id="txt-nro-boleta" readonly style="width: 100px; text-align: right; font-weight: bold;">
+        <label>Tipo:</label>
+        <select id="v-tipo"><option value="BOLETA">Boleta</option><option value="FACTURA">Factura</option></select>
+        <div class="form-group" style="position: relative;">
+        <label>Cliente (RUT o Nombre):</label>
+        <input type="text" id="v-rut" placeholder="Buscar cliente..." onkeyup="buscarClienteVenta(this.value)" autocomplete="off">
+        <div id="sugerencias-clientes" class="lista-sugerencias"></div>
+        <label>Código Producto:</label>
+        <input type="text" id="v-codigo" placeholder="Ej: LECHE01">
+        <label>Cantidad:</label>
+        <input type="number" id="v-cantidad" value="1">
+        <label>Total a Cobrar ($):</label>
+        <input type="number" id="v-total" placeholder="$ 1000">
+
+        <div class="actions">
+        <button class="btn btn-success" style="margin-top:15px" onclick="grabarVenta()">Emitir Documento</button>
+        <button class="btn btn-warning" style="margin-top:15px" onclick="agregarALaLista()">Agregar producto</button>
+        </div>
+      </div>
+      <div id="v-msg"></div>
+
+      <table class="tabla-ventas">
+    <thead>
+        <tr>
+            <th>Codigo</th>
+            <th>Nombre</th>
+            <th>Cantidad</th>
+            <th>Valor Neto</th>
+            <th>SubTotal</th>
+        </tr>
+    </thead>
+    <tbody id="cuerpo-venta-lista">
+        </tbody>
+</table>
+
+<div class="totales-footer">
+    <label>Neto:</label> <input type="text" id="total-final-neto" readonly>
+    <label>Iva:</label> <input type="text" id="total-final-iva" readonly>
+    <label>Total:</label> <input type="text" id="total-final-total" readonly>
+</div>
+
+
+
+    </div>
+  </div>
+   
+</div>
 </section>
 
 <!-- PRODUCTOS -->
@@ -69,77 +139,207 @@
     </div>
   </div>
 </section>
+  
 
 <!-- MOVIMIENTOS -->
-<section id="movimientos" class="tab-content">
-  <div class="content-header"><h2>Registro de Movimientos</h2></div>
-  <div class="content-body">
-    <div class="card">
-      <div class="card-header">Nuevo Movimiento</div>
-      <div class="card-body">
-        <form id="formMovimiento" onsubmit="registrarMovimiento(event)">
-          <div class="form-grid">
-            <div class="form-group"><label>Código *</label><input id="codigoMov" required></div>
-            <div class="form-group"><label>Fecha *</label><input id="fechaMov" type="date" required></div>
-            <div class="form-group"><label>Tipo *</label><select id="tipoMov"><option>INGRESO</option><option>SALIDA</option></select></div>
-            <div class="form-group"><label>Cantidad *</label><input id="cantMov" type="number" step="0.01" required></div>
-            <div class="form-group"><label>Observaciones</label><textarea id="obsMov"></textarea></div>
+ <div id="movimientos" class="tab-content">
+        <div class="content-header">
+          <h2>Registro de Movimientos</h2>
+        </div>
+        <div class="content-body">
+          <div class="card">
+            <div class="card-header">Nuevo Movimiento</div>
+            <div class="card-body">
+              <form id="formMovimiento" onsubmit="registrarMovimiento(event)">
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="codigoMov">Código del Producto *</label>
+                    <div class="autocomplete-container">
+                      <input id="codigoMov" type="text" placeholder="Código del producto" required 
+                             onkeyup="buscarProductoAutocompletado()" 
+                             onblur="ocultarAutocompletado()" 
+                             onfocus="mostrarAutocompletado()">
+                      <div id="autocompleteDropdown" class="autocomplete-dropdown"></div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="fechaMov">Fecha *</label>
+                    <input id="fechaMov" type="date" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="tipoMov">Tipo de Movimiento *</label>
+                    <select id="tipoMov" required onchange="handleTipoChange()">
+                      <option value="INGRESO">Ingreso (Compra)</option>
+                      <option value="SALIDA">Salida (Venta)</option>
+                      <option value="AJUSTE_POSITIVO">Ajuste Positivo</option>
+                      <option value="AJUSTE_NEGATIVO">Ajuste Negativo</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="cantMov">Cantidad *</label>
+                    <input id="cantMov" type="number" min="0.01" step="0.01" placeholder="Cantidad" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="obsMov">Observaciones</label>
+                    <textarea id="obsMov" placeholder="Observaciones opcionales" rows="3"></textarea>
+                  </div>
+                </div>
+                <div id="precioInfo" class="price-info" style="display: none;"></div>
+                <div class="actions">
+                  <button type="submit" class="btn btn-success">Guardar Movimiento</button>
+                  <button type="button" class="btn btn-secondary" onclick="limpiarFormMovimiento()">Limpiar</button>
+                </div>
+              </form>
+              <div id="msgMov"></div>
+            </div>
           </div>
-          <div class="actions">
-            <button class="btn btn-success" type="submit">Guardar Movimiento</button>
-            <button class="btn btn-secondary" type="button" onclick="limpiarFormMovimiento()">Limpiar</button>
-          </div>
-        </form>
-        <div id="msgMov"></div>
+        </div>
       </div>
+<!-- clientes -->
+ <section id="seccion-clientes" class="tab-content">
+  <div class="card">
+    <div class="card-header">Registrar Nuevo Cliente</div>
+    <div class="card-body">
+      <div class="form-group" style="display: grid; gap: 20px;">
+        <input type="text" id="c-rut" placeholder="RUT Empresa">
+        <input type="text" id="c-razon_social" placeholder="Razon Social">
+        <input type="text" id="c-giro" placeholder="giro">
+        <textarea id="c-dir" placeholder="Dirección"></textarea>
+        <input type="text" id="c-tel" placeholder="Teléfono">
+        
+        
+        <button class="btn btn-primary" onclick="guardarCliente()">Guardar Cliente</button>
+      </div>
+      <div id="c-msg"></div>
     </div>
   </div>
+
+  <div class="card" style="margin-top: 20px;">
+    <div class="card-header">Lista de Clientes</div>
+    <div class="card-body">
+        <button class="btn btn-secondary" onclick="listarClientes()">Actualizar Lista</button>
+        <div id="lista-clientes-tabla" style="margin-top: 15px;"></div>
+    </div>
+  </div>
+
+
 </section>
 
 <!-- INVENTARIO -->
-<section id="inventario" class="tab-content">
-  <div class="content-header"><h2>Control de Inventario</h2></div>
-  <div class="content-body">
-    <div class="card">
-      <div class="card-header">Stock Actual</div>
-      <div class="card-body">
-        <div class="actions"><button class="btn btn-primary" onclick="mostrarStock()">Actualizar Stock</button></div>
-        <div id="loading" class="loading"></div>
-        <div id="stockTable"></div>
+ <div id="inventario" class="tab-content">
+        <div class="content-header">
+          <h2>Control Inventario</h2>
+        </div>
+        <div class="content-body">
+          <div class="card">
+            <div class="card-header">Stock Actual</div>
+            <div class="card-body">
+              <div class="actions">
+                <button class="btn btn-primary" onclick="mostrarStock()">Actualizar Inventario</button>
+                <button class="btn btn-success" onclick="exportarStock()">Exportar CSV</button>
+                <button class="btn btn-warning" onclick="mostrarAlertas()">Solo Alertas</button>
+              </div>
+              <div id="loading" class="loading">Cargando inventario...</div>
+              <div class="table-container">
+                <div id="stockTable"></div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</section>
+
 
 <!-- REPORTES -->
-<section id="reportes" class="tab-content">
-  <div class="content-header"><h2>Reportes</h2></div>
-  <div class="content-body">
-    <div class="card">
-      <div class="card-header">Historial</div>
-      <div class="card-body">
-        <input id="fechaDesde" type="date"><input id="fechaHasta" type="date">
-        <select id="filtroTipo"><option value="">Todos</option></select>
-        <div class="actions"><button class="btn btn-primary" onclick="mostrarHistorial()">Generar</button></div>
-        <div id="historialTable"></div>
+  <div id="reportes" class="tab-content">
+        <div class="content-header">
+          <h2>Reportes y Análisis</h2>
+        </div>
+        <div class="content-body">
+          <div class="card">
+            <div class="card-header">Historial de Movimientos</div>
+            <div class="card-body">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="fechaDesde">Fecha Desde</label>
+                  <input id="fechaDesde" type="date" required>
+                </div>
+                <div class="form-group">
+                  <label for="fechaHasta">Fecha Hasta</label>
+                  <input id="fechaHasta" type="date" required>
+                </div>
+                <div class="form-group">
+                  <label for="filtroTipo">Filtrar por Tipo</label>
+                  <select id="filtroTipo">
+                    <option value="">Todos los movimientos</option>
+                    <option value="INGRESO">Solo Ingresos</option>
+                    <option value="SALIDA">Solo Salidas</option>
+                    <option value="AJUSTE_POSITIVO">Solo Ajustes Positivos</option>
+                    <option value="AJUSTE_NEGATIVO">Solo Ajustes Negativos</option>
+                  </select>
+                </div>
+              </div>
+              <div class="actions">
+                <button class="btn btn-primary" onclick="mostrarHistorial()">Generar Reporte</button>
+                <button class="btn btn-success" onclick="exportarReporte()">Exportar Reporte</button>
+              </div>
+              <div class="table-container">
+                <div id="historialTable">
+                  <h3>Historial de Movimientos de Inventario</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Producto (Código)</th>
+                            <th>Tipo</th>
+                            <th>Cantidad</th>
+                            <th>Observación</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-movimientos">
+                  </tbody>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</section>
 
 <!-- BUSCAR -->
-<section id="buscar" class="tab-content">
-  <div class="content-header"><h2>Búsqueda</h2></div>
-  <div class="content-body">
-    <div class="card">
-      <div class="card-body">
-        <input id="buscarTexto" placeholder="Buscar..." onkeyup="buscarProducto()">
-        <div id="resultadosBusqueda"></div>
-      </div>
-    </div>
-  </div>
-</section>
 
+      <div id="buscar" class="tab-content">
+        <div class="content-header">
+          <h2>Búsqueda de Productos</h2>
+        </div>
+        <div class="content-body">
+          <div class="card">
+            <div class="card-header">Buscar Productos</div>
+            <div class="card-body">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="buscarTexto">Buscar por código, nombre o grupo</label>
+                  <input id="buscarTexto" type="text" placeholder="Escriba para buscar..." onkeyup="buscarEnTiempoReal()">
+                </div>
+              </div>
+              <div class="actions">
+                <button class="btn btn-primary" onclick="buscarProducto()">Buscar</button>
+                <button class="btn btn-secondary" onclick="limpiarBusqueda()">Limpiar</button>
+              </div>
+              <div class="table-container">
+                <div id="resultadosBusqueda"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+ <!--modal-->
+      <div id="modal-notificacion" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-icon">✅</div>
+        <h3 id="modal-titulo">¡Éxito!</h3>
+        <p id="modal-mensaje">El producto ha sido registrado correctamente.</p>
+        <button class="btn btn-primary" onclick="cerrarModal()">Aceptar</button>
+    </div>
+</div>
 <!-- CONFIGURACION -->
 <section id="configuracion" class="tab-content">
   <div class="content-header"><h2>Configuración</h2></div>
@@ -147,7 +347,9 @@
 </section>
 
   </div>
+  </div>
 </div>
-
+</div>
+<script src="frontend.js"></script>
 </body>
 </html>
