@@ -582,33 +582,73 @@ function displayStockTable(data) {
 }
 
 function agregarALaLista() {
-    // 1. Capturar datos de los campos superiores (basado en tu imagen)
+    // 1. Capturar datos de los campos superiores
     const codigo = document.getElementById('v-codigo').value;
-    const nombre = document.getElementById('v-cliente').value;
-    const precioUnitario = parseFloat(document.getElementById('v-total').value) || 0;
+    const nombre = document.getElementById('v-producto').value;
     const cantidad = parseFloat(document.getElementById('v-cantidad').value) || 0;
+    const precioUnitario = parseFloat(document.getElementById('v-total').value) || 0;
 
-    if (!codigo || cantidad <= 0) return;
+    if (!codigo || cantidad < 1) {
+        alert("La cantidad mínima es 1");
+        return;
+    }
 
-    // 2. Cálculos por línea (Desglose individual)
-    const netoLinea = precioUnitario * cantidad;
-    const ivaLinea = Math.round(netoLinea * 0.19);
-    const totalLinea = netoLinea + ivaLinea;
+    // 2. BUSCAR SI EL PRODUCTO YA ESTÁ EN LA LISTA
+    const indiceExistente = listaVenta.findIndex(item => item.codigo === codigo);
 
-    // 3. Guardar en el array
-    listaVenta.push({
-        codigo,
-        nombre,
-        precioUnitario,
-        cantidad,
-        neto: netoLinea,
-        iva: ivaLinea,
-        total: totalLinea
-    });
+    if (indiceExistente !== -1) {
+        // --- CASO: EL PRODUCTO YA EXISTE ---
+        // Sumamos la nueva cantidad a la anterior
+        listaVenta[indiceExistente].cantidad += cantidad;
+        
+        // Recalculamos los valores para la nueva cantidad acumulada
+        const nuevaCantidad = listaVenta[indiceExistente].cantidad;
+        const netoCalculado = Number(((precioUnitario / 1.19).toFixed(1)) * nuevaCantidad);
+        
+        listaVenta[indiceExistente].neto = netoCalculado;
+        listaVenta[indiceExistente].iva = Math.round(netoCalculado * 0.19);
+        listaVenta[indiceExistente].total = listaVenta[indiceExistente].neto + listaVenta[indiceExistente].iva;
+        
+        console.log("Producto actualizado:", codigo);
+    } else {
+        // --- CASO: PRODUCTO NUEVO ---
+        const netoLinea = Number(((precioUnitario / 1.19).toFixed(1)) * cantidad);
+        const ivaLinea = Math.round(netoLinea * 0.19);
+        const totalLinea = Math.round(netoLinea + ivaLinea);
+        
 
+        listaVenta.push({
+            codigo,
+            nombre,
+            cantidad,
+            precioUnitario,
+            neto: netoLinea,
+            iva: ivaLinea,
+            total: totalLinea
+        });
+        console.log("Producto nuevo agregado:", codigo);
+    }
+
+    // 3. Actualizar interfaz y limpiar
     actualizarTablaYTotales();
-    limpiarCamposProducto(); // Opcional: limpiar inputs superiores después de agregar
+    limpiarCamposProducto(); 
 }
+
+// Función auxiliar para limpiar solo los campos del producto después de agregar
+function limpiarCamposProducto() {
+    document.getElementById('v-codigo').value = '';
+    document.getElementById('v-producto').value = '';
+    document.getElementById('v-cantidad').value = 1 ;
+    document.getElementById('v-total').value = '';
+
+     // 1. Limpiar datos del Cliente
+   // document.getElementById('v-cliente').value = '';
+    //document.getElementById('v-razon_social').value = '';
+
+    // Ponemos el foco de nuevo en el código para el siguiente producto
+    document.getElementById('v-codigo').focus();
+}
+
 
 function actualizarTablaYTotales() {
     const tbody = document.getElementById('cuerpo-venta-lista');
@@ -628,7 +668,6 @@ function actualizarTablaYTotales() {
             <tr>
                 <td>${item.codigo}</td>
                 <td>${item.nombre}</td>
-                <td>$${item.precioUnitario.toLocaleString()}</td>
                 <td>${item.cantidad}</td>
                 <td>$${item.neto.toLocaleString()}</td>
                 <td>$${item.iva.toLocaleString()}</td>
@@ -668,3 +707,12 @@ async function obtenerProximoNumeroDocumento() {
 document.addEventListener('seccion-ventas', () => {
     obtenerProximoNumeroDocumento(); // Nombre corregido
 });
+
+function validarMinimo(input) {
+    let valor = parseInt(input.value);
+
+    // Si el usuario escribe algo que no es un número o es menor a 1, lo corregimos
+    if (!isNaN(valor) && valor < 1) {
+        input.value = 1;
+    }
+}
