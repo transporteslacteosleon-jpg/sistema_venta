@@ -59,31 +59,68 @@
     </div>
   </div>
 </section>
-<!-- ventas -->
+<!-- form ventas -->
 <section id="seccion-ventas" class="tab-content">
   <div class="card">
     <div class="card-header">Generar Factura / Boleta</div>
     <div class="card-body">
+      <!-- numero de documento y tipo de documento  -->
       <div class="form-group">
-       <label>N° Documento</label><input type="text" id="txt-nro-boleta" readonly style="width: 100px; text-align: right; font-weight: bold;">
-        <label>Tipo:</label>
-        <select id="v-tipo"><option value="BOLETA">Boleta</option><option value="FACTURA">Factura</option></select>
-        <div class="form-group" style="position: relative;">
-        <label>Cliente (RUT o Nombre):</label>
-        <input type="text" id="v-rut" placeholder="Buscar cliente..." onkeyup="buscarClienteVenta(this.value)" autocomplete="off">
+   <div class="form-row-inline">
+        <div class="form-group">
+        <label for="txt-nro-boleta">N° Documento</label>
+        <input type="text" id="txt-nro-boleta" readonly placeholder="Cargando...">
+        </div>
+
+    <div class="form-group">
+        <label for="v-tipo">Tipo Documento</label>
+        <select id="v-tipo">
+            <option value="BOLETA">Boleta</option>
+            <option value="FACTURA">Factura</option>
+        </select>
+    </div>
+    </div>
+</div>
+        <!-- cliente y razon social  -->
+        <div class="form-row-inline">
+        <div class="form-group" style="position: relative;"> 
+        <label for="v-cliente">Cliente (RUT o Nombre)</label>
+         <input type="text" id="v-cliente" onkeyup="buscarClienteVenta(this.value)" autocomplete="off" placeholder="Buscar por RUT o Nombre...">
+         </div>
+         <div class="form-group">
+         <label for="v-cliente">Razon Social</label>
+         <input type="text" id="v-razon_social" disabled>
         <div id="sugerencias-clientes" class="lista-sugerencias"></div>
+        </div>
+       </div>
+        <!-- codigo y nombre producto  -->
+      <div class="form-row-inline">
+      <div class="form-group" style="position: relative;"> 
         <label>Código Producto:</label>
-        <input type="text" id="v-codigo" placeholder="Ej: LECHE01">
+        <input type="text" id="v-codigo" onkeyup="buscarProductoVenta(this.value)" autocomplete="off" placeholder="Ej: LECHE01">
+        </div>
+        <div class="form-group">
+        <label for="v-producto">Nombre Producto</label>
+         <input type="text" id="v-producto" disabled>
+        <div id="sugerencias-productos" class="lista-productos"></div>
+        </div>
+      </div>
+  
+        <!-- cantidad y valor  -->
+     <div class="form-group">
+       <div class="form-row-inline">
         <label>Cantidad:</label>
         <input type="number" id="v-cantidad" value="1">
         <label>Total a Cobrar ($):</label>
-        <input type="number" id="v-total" placeholder="$ 1000">
+        <input type="number" id="v-total" placeholder="$" disabled>
+    </div>
+    </div>
 
         <div class="actions">
         <button class="btn btn-success" style="margin-top:15px" onclick="grabarVenta()">Emitir Documento</button>
         <button class="btn btn-warning" style="margin-top:15px" onclick="agregarALaLista()">Agregar producto</button>
         </div>
-      </div>
+      
       <div id="v-msg"></div>
 
       <table class="tabla-ventas">
@@ -108,7 +145,7 @@
 
 
 
-    </div>
+ 
   </div>
    
 </div>
@@ -131,7 +168,7 @@
           </div>
           <div class="actions">
             <button class="btn btn-success" type="submit">Registrar Producto</button>
-            <button class="btn btn-secondary" type="button" onclick="limpiarFormProducto()">Limpiar</button>
+            <button class="btn btn-secondary" type="button" onclick="">Limpiar</button>
           </div>
         </form>
         <div id="msgProd"></div>

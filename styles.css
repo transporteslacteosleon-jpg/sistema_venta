@@ -453,21 +453,26 @@
       margin-bottom: 20px;
     }
     .lista-sugerencias {
-    position: absolute;
-    z-index: 100;
+    position: absolute; /* Se posiciona respecto al div padre */
+    top: 100%;          /* Empieza justo donde termina el input */
+    left: 0;
+    width: 100%;        /* Mismo ancho que el input */
+    z-index: 1000;      /* Para que quede por encima de otros textos/tablas */
     background: white;
-    width: 100%;
-    border: 1px solid #ccc;
-    display: none; /* Se muestra solo cuando hay resultados */
+    border: 1px solid #ddd;
+    border-top: none;
+    max-height: 200px;
+    overflow-y: auto;   /* Scroll si hay muchos resultados */
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
+    display: none;
+}
     .sugerencia-item {
         padding: 10px;
         cursor: pointer;
         border-bottom: 1px solid #eee;
     }
     .sugerencia-item:hover {
-        background-color: #f0f0f0;
+        background-color: #f0f7fa;
     }
     @media (max-width: 768px) {
       .sidebar {
@@ -496,3 +501,19 @@
         flex-direction: column;
       }
     }
+    /* Añadir al final de styles.css */
+.form-row-inline {
+    display: flex;
+    gap: 15px; /* Espacio entre los dos campos */
+    margin-bottom: 15px;
+}
+
+.form-row-inline .form-group {
+    flex: 1; /* Hace que ambos ocupen el mismo ancho, o puedes ajustarlo */
+    margin-bottom: 0; /* Quita el margen inferior para que no se desalineen */
+}
+
+/* Opcional: ajustar el ancho si quieres que el tipo sea más corto que el número */
+.form-row-inline .form-group:first-child {
+    flex: 0 0 150px; 
+}

@@ -1,5 +1,6 @@
 const API = 'http://localhost:3000/api';
 let listaVenta = []; // Array para almacenar los productos agregados
+let clienteSeleccionado = null
 
 /* ================= logearme ================= */
 
@@ -37,7 +38,7 @@ function showStockAlerts() {
     })
     .then(data => {
       const alertProducts = data.filter(
-        p => p.cantidad <= 0 || (p.cantidad <= p.stockMin && p.stockMin > 0)
+        p => p.cantidad <= 0 || (p.cantidad <= p.stock_min && p.stock_min > 0)
       );
 
       const container = document.getElementById('alertsContainer');
@@ -144,7 +145,7 @@ function registrarProducto(e) {
     nombre: nombreProd.value.trim(),
     unidad: unidadProd.value,
     grupo: grupoProd.value,
-    stockMin: Number(stockMinProd.value)||0
+    stock_min: Number(stockMinProd.value)||0
   };
 
   fetch(`${API}/productos`,{
@@ -153,7 +154,7 @@ function registrarProducto(e) {
     body:JSON.stringify(producto)
   })
   .then(r=>r.json())
-  .then(msg=>showMessage('msgProd',msg,'success'))
+  .then(msg=>showMessage('msgProd',msg,'success',limpiarFormProducto()))
   .catch(()=>showMessage('msgProd','Error','error'));
 }
 
@@ -162,7 +163,7 @@ async function buscarProducto(texto) {
 
     try {
         // La URL debe coincidir con la del backend: /api/productos/buscar?q=...
-        const response = await fetch(`${API}/productos/buscar`);
+        const response = await fetch(`${API}/productos/buscar?q=${texto}`);
         
         if (!response.ok) throw new Error('Error en la búsqueda');
         
@@ -247,7 +248,7 @@ function procesarVentaDirecta() {
     const data = {
         tipo: document.getElementById('v-tipo').value,
         // Si hay un cliente seleccionado usamos su nombre, si no, el texto del input
-        cliente: clienteSeleccionado ? clienteSeleccionado.nombre : document.getElementById('v-cliente').value,
+        cliente: clienteSeleccionado ? clienteSeleccionado.razon_social : document.getElementById('v-cliente').value,
         codigo: document.getElementById('v-codigo').value,
         cantidad: parseFloat(document.getElementById('v-cantidad').value),
         total: parseFloat(document.getElementById('v-total').value)
@@ -277,11 +278,11 @@ function procesarVentaDirecta() {
     })
     .catch(err => alert("Error al conectar con el servidor"));
 
-    let clienteSeleccionado = null;
+  }
 
 function buscarClienteVenta(termino) {
     const lista = document.getElementById('sugerencias-clientes');
-    if (termino.length < 0) {
+    if (termino.length < 2) {
         lista.style.display = 'none';
         return;
     }
@@ -294,8 +295,35 @@ function buscarClienteVenta(termino) {
                 data.forEach(c => {
                     const div = document.createElement('div');
                     div.className = 'sugerencia-item';
-                    div.innerHTML = `<strong>${c.rut_dni}</strong> - ${c.nombre}`;
+                    div.innerHTML = `<strong>${c.rut}</strong> - ${c.razon_social}`;
                     div.onclick = () => seleccionarCliente(c);
+                    lista.appendChild(div);
+                });
+                lista.style.display = 'block';
+            } else {
+                lista.style.display = 'none';
+            }
+        });
+}
+
+
+function buscarProductoVenta(termino) {
+    const lista = document.getElementById('sugerencias-productos');
+    if (termino.length < 2) {
+        lista.style.display = 'none';
+        return;
+    }
+
+    fetch(`${API}/productos/buscar?q=${termino}`)
+        .then(r => r.json())
+        .then(data => {
+            if (data.length > 0) {
+                lista.innerHTML = '';
+                data.forEach(c => {
+                    const div = document.createElement('div');
+                    div.className = 'sugerencia-item';
+                    div.innerHTML = `<strong>${c.codigo}</strong> - ${c.nombre}`;
+                    div.onclick = () => seleccionarProducto(c);
                     lista.appendChild(div);
                 });
                 lista.style.display = 'block';
@@ -307,14 +335,25 @@ function buscarClienteVenta(termino) {
 
 function seleccionarCliente(cliente) {
     // Rellenamos el campo con el nombre y guardamos el objeto
-    document.getElementById('v-cliente').value = cliente.nombre;
+    document.getElementById('v-cliente').value = cliente.rut;
+    document.getElementById('v-razon_social').value = cliente.razon_social;
     document.getElementById('sugerencias-clientes').style.display = 'none';
     
     // Guardamos el cliente seleccionado para usarlo al procesar la venta
     clienteSeleccionado = cliente; 
     console.log("Cliente cargado:", clienteSeleccionado);
 }
-} 
+function seleccionarProducto(cliente) {
+    // Rellenamos el campo con el nombre y guardamos el objeto
+    document.getElementById('v-codigo').value = cliente.codigo;
+    document.getElementById('v-producto').value = cliente.nombre;
+    document.getElementById('v-total').value = cliente.valor_venta;
+    document.getElementById('sugerencias-productos').style.display = 'none';
+    
+    // Guardamos el cliente seleccionado para usarlo al procesar la venta
+    productoSeleccionado = cliente; 
+    console.log("Producto cargado:", productoSeleccionado);
+}
 /*  ================clientes=====================*/
 function guardarCliente() {
     const data = {
@@ -386,7 +425,7 @@ function mostrarHistorial() {
   const tipo = filtroTipo.value;
 
   let url = `${API}/movimientos/historial`;
-  if(tipo) url += `&tipo=${tipo}`;
+  if(tipo) url += `?tipo=${tipo}`;
 
 
      const tablaCuerpo = document.getElementById('tabla-movimientos');
