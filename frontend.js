@@ -586,6 +586,7 @@ function agregarALaLista() {
     const codigo = document.getElementById('v-codigo').value;
     const nombre = document.getElementById('v-producto').value;
     const cantidad = parseFloat(document.getElementById('v-cantidad').value) || 0;
+    const precioDescuento = document.getElementById('v-descuento').value;
     const precioUnitario = parseFloat(document.getElementById('v-total').value) || 0;
 
     if (!codigo || cantidad < 1) {
@@ -603,7 +604,8 @@ function agregarALaLista() {
         
         // Recalculamos los valores para la nueva cantidad acumulada
         const nuevaCantidad = listaVenta[indiceExistente].cantidad;
-        const netoCalculado = Number(((precioUnitario / 1.19).toFixed(1)) * nuevaCantidad);
+        const precioFinal = Math.round(precioUnitario-((precioUnitario * precioDescuento)/100));
+        const netoCalculado = Number(((precioFinal / 1.19).toFixed(1)) * nuevaCantidad);
         
         listaVenta[indiceExistente].neto = netoCalculado;
         listaVenta[indiceExistente].iva = Math.round(netoCalculado * 0.19);
@@ -612,7 +614,8 @@ function agregarALaLista() {
         console.log("Producto actualizado:", codigo);
     } else {
         // --- CASO: PRODUCTO NUEVO ---
-        const netoLinea = Number(((precioUnitario / 1.19).toFixed(1)) * cantidad);
+        const precioFinal = Math.round(precioUnitario-((precioUnitario * precioDescuento)/100));
+        const netoLinea = Number(cantidad * ((precioFinal / 1.19).toFixed(1)));
         const ivaLinea = Math.round(netoLinea * 0.19);
         const totalLinea = Math.round(netoLinea + ivaLinea);
         
@@ -621,7 +624,7 @@ function agregarALaLista() {
             codigo,
             nombre,
             cantidad,
-            precioUnitario,
+            precioDescuento,
             neto: netoLinea,
             iva: ivaLinea,
             total: totalLinea
@@ -640,6 +643,7 @@ function limpiarCamposProducto() {
     document.getElementById('v-producto').value = '';
     document.getElementById('v-cantidad').value = 1 ;
     document.getElementById('v-total').value = '';
+    document.getElementById('v-descuento').value = 1 ;
 
      // 1. Limpiar datos del Cliente
    // document.getElementById('v-cliente').value = '';

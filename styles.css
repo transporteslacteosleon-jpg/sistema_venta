@@ -505,17 +505,21 @@
 .form-row-inline {
     display: flex;
     gap: 15px; /* Espacio entre los dos campos */
+    align-items: flex-end;
     margin-bottom: 15px;
 }
 
 .form-row-inline .form-group {
     flex: 1; /* Hace que ambos ocupen el mismo ancho, o puedes ajustarlo */
+    display: flex;
     margin-bottom: 0; /* Quita el margen inferior para que no se desalineen */
 }
 
 /* Opcional: ajustar el ancho si quieres que el tipo sea más corto que el número */
-.form-row-inline .form-group:first-child {
-    flex: 0 0 150px; 
+.form-row-inline label {
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 0.9rem;
 }
 #totales-footer {
     display: none; /* Se oculta al cargar la página */

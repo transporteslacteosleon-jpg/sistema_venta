@@ -109,19 +109,21 @@
   
         <!-- cantidad y valor  -->
     <div class="form-row-inline">
-       <div class="form-group">
+    <div class="form-group">
         <label for="v-cantidad">Cantidad</label>
         <input type="number" id="v-cantidad" min="1" value="1" oninput="validarMinimo(this)">
-        </div>
-        <div class="form-group">
-        <label>Descuento (%):</label>
-        <input type="number" id="v-descuento" placeholder="%" >
-        <div class="form-group">
-        <label>Total a Cobrar ($):</label>
-        <input type="number" id="v-total" placeholder="$" disabled>
-     </div>
-     </div>
     </div>
+
+    <div class="form-group">
+        <label for="v-descuento">Descuento (%)</label>
+        <input type="number" id="v-descuento" min="1" value="1" oninput="validarMinimo(this)">
+    </div>
+
+    <div class="form-group">
+        <label for="v-total">Total a Cobrar ($)</label>
+        <input type="number" id="v-total" placeholder="$" disabled>
+    </div>
+</div>
 
         <div class="actions">
         <button class="btn btn-success" style="margin-top:15px" onclick="grabarVenta()">Emitir Documento</button>
@@ -136,6 +138,7 @@
             <th>Codigo</th>
             <th>Nombre</th>
             <th>Cantidad</th>
+            <th>% Descuento</th>
             <th>Neto</th>
             <th>IVA</th>
             <th>SubTotal</th>
