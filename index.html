@@ -75,7 +75,7 @@
     <div class="form-group">
         <label for="v-tipo">Tipo Documento</label>
         <select id="v-tipo">
-            <option value="NOTA DE VENTA">Nota De Credito</option>
+            <option value="NOTA DE VENTA">Nota De Venta</option>
             <option value="BOLETA">Boleta</option>
             <option value="FACTURA">Factura</option>
         </select>
@@ -87,11 +87,12 @@
         <div class="form-group" style="position: relative;"> 
         <label for="v-cliente">Cliente (RUT o Nombre)</label>
          <input type="text" id="v-cliente" onkeyup="buscarClienteVenta(this.value)" autocomplete="off" placeholder="Buscar por RUT o Nombre...">
+         <div id="sugerencias-clientes" class="lista-sugerencias"></div>
          </div>
          <div class="form-group">
          <label for="v-cliente">Razon Social</label>
          <input type="text" id="v-razon_social" disabled>
-        <div id="sugerencias-clientes" class="lista-sugerencias"></div>
+        
         </div>
        </div>
         <!-- codigo y nombre producto  -->
@@ -99,11 +100,11 @@
       <div class="form-group" style="position: relative;"> 
         <label>Código Producto:</label>
         <input type="text" id="v-codigo" onkeyup="buscarProductoVenta(this.value)" autocomplete="off" placeholder="Ej: LECHE01">
+         <div id="sugerencias-productos" class="lista-productos"></div>
         </div>
         <div class="form-group">
         <label for="v-producto">Nombre Producto</label>
          <input type="text" id="v-producto" disabled>
-        <div id="sugerencias-productos" class="lista-productos"></div>
         </div>
       </div>
   
@@ -116,7 +117,7 @@
 
     <div class="form-group">
         <label for="v-descuento">Descuento (%)</label>
-        <input type="number" id="v-descuento" min="1" value="1" oninput="validarMinimo(this)">
+        <input type="number" id="v-descuento" min="0" value="0" max="10">
     </div>
 
     <div class="form-group">

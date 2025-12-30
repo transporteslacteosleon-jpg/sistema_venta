@@ -339,10 +339,19 @@
     }
     
     .table-container {
-      overflow-x: auto;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      border: 1px solid #E5F2F7;
+    max-height: 300px; /* Ajusta la altura a tu gusto */
+    overflow-y: auto;  /* Activa el scroll vertical */
+    border: 1px solid #ddd;
+    margin-bottom: 20px;
+    background: white;
+    }
+
+    /* Para que el encabezado de la tabla no se mueva al hacer scroll */
+    .table-container table thead {
+        position: sticky;
+        top: 0;
+        background-color: #f8f9fa;
+        z-index: 10;
     }
     
     table {
@@ -452,28 +461,43 @@
       flex-wrap: wrap;
       margin-bottom: 20px;
     }
-    .lista-sugerencias {
-    position: absolute; /* Se posiciona respecto al div padre */
-    top: 100%;          /* Empieza justo donde termina el input */
+    .lista-productos {
+    position: absolute;   /* Flota sobre los demás elementos */
+    top: 100%;            /* Se posiciona justo debajo del input */
     left: 0;
-    width: 100%;        /* Mismo ancho que el input */
-    z-index: 1000;      /* Para que quede por encima de otros textos/tablas */
-    background: white;
+    width: 100%;          /* Toma el mismo ancho que el contenedor padre */
+    background-color: white;
     border: 1px solid #ddd;
-    border-top: none;
+    z-index: 1000;        /* Asegura que esté por encima de tablas o botones */
+    max-height: 200px;    /* Altura máxima para que no tape toda la pantalla */
+    overflow-y: auto;     /* Scroll interno si hay muchos resultados */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Sombra para que se vea elevado */
+    display: none;        /* Se controla desde el JS */
+    }
+
+    .lista-sugerencias {
+    position: absolute;  /* Flota sobre los demás elementos */
+    top: 100%;           /* Se pega al borde inferior del input */
+    left: 0;
+    width: 100%;         /* Mismo ancho que el buscador de RUT */
+    background: white;
+    border: 1px solid #ccc;
+    z-index: 999;        /* Asegura que esté por encima de todo */
     max-height: 200px;
-    overflow-y: auto;   /* Scroll si hay muchos resultados */
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    display: none;
+    overflow-y: auto;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    display: none;       /* Se activa por JS */
 }
-    .sugerencia-item {
-        padding: 10px;
-        cursor: pointer;
-        border-bottom: 1px solid #eee;
-    }
-    .sugerencia-item:hover {
-        background-color: #f0f7fa;
-    }
+
+.sugerencia-item {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+}
+
+.sugerencia-item:hover {
+    background-color: #f0f7fa;
+}
     @media (max-width: 768px) {
       .sidebar {
         width: 100%;
@@ -528,4 +552,13 @@
     background-color: #f8f9fa;
     border-radius: 8px;
     border: 1px solid #dee2e6;
+}
+.totales-footer {
+    margin-top: 40px;    /* Esto crea el espacio hacia arriba */
+    display: flex;       /* Mantiene los elementos en línea */
+    justify-content: flex-end; /* Alinea los totales a la derecha */
+    gap: 15px;           /* Espacio entre Neto, IVA y Total */
+    align-items: center;
+    padding: 10px;
+    border-top: 1px solid #eee; /* Opcional: una línea divisoria */
 }

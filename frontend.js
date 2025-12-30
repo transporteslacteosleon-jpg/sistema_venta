@@ -612,8 +612,10 @@ function agregarALaLista() {
         listaVenta[indiceExistente].total = listaVenta[indiceExistente].neto + listaVenta[indiceExistente].iva;
         
         console.log("Producto actualizado:", codigo);
-    } else {
-        // --- CASO: PRODUCTO NUEVO ---
+    } else if (precioDescuento > 0 || precioDescuento <=10) {
+
+    
+        // --- CASO: PRODUCTO NUEVO con descuento---
         const precioFinal = Math.round(precioUnitario-((precioUnitario * precioDescuento)/100));
         const netoLinea = Number(cantidad * ((precioFinal / 1.19).toFixed(1)));
         const ivaLinea = Math.round(netoLinea * 0.19);
@@ -630,11 +632,31 @@ function agregarALaLista() {
             total: totalLinea
         });
         console.log("Producto nuevo agregado:", codigo);
+    }else if (precioDescuento == 0 || precioDescuento == ''){
+         // --- CASO: PRODUCTO NUEVO sin descuento---
+       
+        const netoLinea = Number(cantidad * ((precioUnitario / 1.19).toFixed(1)));
+        const ivaLinea = Math.round(netoLinea * 0.19);
+        const totalLinea = Math.round(netoLinea + ivaLinea);
+        
+
+        listaVenta.push({
+            codigo,
+            nombre,
+            cantidad,
+            precioDescuento,
+            neto: netoLinea,
+            iva: ivaLinea,
+            total: totalLinea
+        });
+        console.log("Producto nuevo agregado:", codigo);
+
     }
 
     // 3. Actualizar interfaz y limpiar
     actualizarTablaYTotales();
     limpiarCamposProducto(); 
+    
 }
 
 // Función auxiliar para limpiar solo los campos del producto después de agregar
@@ -673,6 +695,7 @@ function actualizarTablaYTotales() {
                 <td>${item.codigo}</td>
                 <td>${item.nombre}</td>
                 <td>${item.cantidad}</td>
+                <td>${item.precioDescuento}</td>
                 <td>$${item.neto.toLocaleString()}</td>
                 <td>$${item.iva.toLocaleString()}</td>
                 <td>$${item.total.toLocaleString()}</td>
