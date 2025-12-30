@@ -193,34 +193,41 @@ function registrarMovimiento(e) {
     body:JSON.stringify(mov)
   })
   .then(r=>r.json())
-  .then(msg=>showMessage('msgMov',msg,'success'))
-  .catch(()=>showMessage('msgMov','Error','error'));
+  .then(data => {
+    const mensajeTexto = data.message || data.msg || "Movimiento registrado";
+    showMessage('msgMov', mensajeTexto, 'success');
+    limpiarFormMovimiento();
+  })
+
+   .catch(()=>showMessage('msgMov','Error','error'));
 }
-/* ================= registrar venta1 ================= */
-async function grabarVenta() {
+/* ================= registrar venta ================= */
+    async function grabarVenta() {
     if (listaVenta.length === 0) {
-        return mostrarMensaje("Error", "La lista de productos está vacía", true);
+        alert("La lista de productos está vacía");
+        return;
     }
 
-    // Recolectar datos del formulario (según tu imagen)
+    // Recolectar datos corregidos
     const datosVenta = {
-        nro_boleta: document.getElementById('txt-nro-boleta').value,
+        nro_documento: document.getElementById('txt-nro-boleta').value,
         condiciones: document.getElementById('v-tipo').value,
         cliente: {
-            rut: document.getElementById('v-rut').value,
-            nombre: document.getElementById('v-cliente').value
+            rut: document.getElementById('v-cliente').value, // ID Corregido
+            nombre: document.getElementById('v-razon_social').value // ID Corregido
         },
-        productos: listaVenta, // El array que llenamos con "Agregar a la Lista"
+        productos: listaVenta,
         totales: {
-            neto: parseFloat(document.getElementById('total-final-neto').value.replace(/\./g, '')),
-            iva: parseFloat(document.getElementById('total-final-iva').value.replace(/\./g, '')),
-            total: parseFloat(document.getElementById('total-final-total').value.replace(/\./g, ''))
+            // Quitamos puntos y convertimos a número
+            neto: parseInt(document.getElementById('total-final-neto').value.replace(/\./g, '')) || 0,
+            iva: parseInt(document.getElementById('total-final-iva').value.replace(/\./g, '')) || 0,
+            total: parseInt(document.getElementById('total-final-total').value.replace(/\./g, '')) || 0
         }
     };
 
     try {
         const response = await fetch(`${API}/ventas/grabar`, {
-            method: 'POST',
+            method: 'POST', // Aseguramos que sea POST
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(datosVenta)
         });
@@ -228,57 +235,19 @@ async function grabarVenta() {
         const result = await response.json();
 
         if (result.success) {
-            mostrarMensaje("¡Éxito!", "La venta ha sido registrada y el stock actualizado.");
-            limpiarTodoElFormulario(); // Función para resetear el form
+            alert("¡Éxito! Venta registrada.");
+            LimpiarCamposFormVentas();
+            quitarElemento();
+            obtenerProximoNumeroDocumento();
+            
         } else {
-            mostrarMensaje("Error", result.error, true);
+            alert("Error: " + (result.error || result.message));
         }
     } catch (error) {
-        mostrarMensaje("Error", "Error de conexión con el servidor", true);
+        console.error(error);
+        alert("Error de conexión con el servidor");
     }
 }
-
-function limpiarTodoElFormulario() {
-    listaVenta = [];
-    document.getElementById('form-venta').reset();
-    actualizarTablaYTotales();
-}
-/* ================= registrar venta ================= */
-function procesarVentaDirecta() {
-    const data = {
-        tipo: document.getElementById('v-tipo').value,
-        // Si hay un cliente seleccionado usamos su nombre, si no, el texto del input
-        cliente: clienteSeleccionado ? clienteSeleccionado.razon_social : document.getElementById('v-cliente').value,
-        codigo: document.getElementById('v-codigo').value,
-        cantidad: parseFloat(document.getElementById('v-cantidad').value),
-        total: parseFloat(document.getElementById('v-total').value)
-    };
-
-    if (!data.codigo || !data.total) return alert("Falta código o total");
-
-    fetch(`${API}/ventas`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-    })
-    .then(r => r.json())
-    .then(res => {
-        if (res.success) {
-            document.getElementById('v-msg').innerHTML = 
-                `<p style="color:green">✅ ${data.tipo} #${res.id} creada y stock actualizado.</p>`;
-             
-            // Limpiar campos
-            document.getElementById('v-cliente').value = '';
-            document.getElementById('v-codigo').value = '';
-            document.getElementById('v-total').value = '';
-            clienteSeleccionado = null; // Limpiar selección tras la venta
-            loadDashboard(); // Actualizar números del dashboard
-            imprimirDocumento(data, res.id);
-        }
-    })
-    .catch(err => alert("Error al conectar con el servidor"));
-
-  }
 
 function buscarClienteVenta(termino) {
     const lista = document.getElementById('sugerencias-clientes');
@@ -674,7 +643,16 @@ function limpiarCamposProducto() {
     // Ponemos el foco de nuevo en el código para el siguiente producto
     document.getElementById('v-codigo').focus();
 }
-
+function LimpiarCamposFormVentas(){
+    
+    // 1. Vaciar el arreglo que contiene los productos
+    listaVenta = []; 
+    document.getElementById('v-cliente').value = '';
+    document.getElementById('v-razon_social').value = '';
+    document.getElementById('total-final-neto').value = 0;
+    document.getElementById('total-final-iva').value = 0;
+    document.getElementById('total-final-total').value = 0;
+}
 
 function actualizarTablaYTotales() {
     const tbody = document.getElementById('cuerpo-venta-lista');
