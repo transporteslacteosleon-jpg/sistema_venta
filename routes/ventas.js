@@ -6,8 +6,7 @@ router.post('/ventas/grabar', async (req, res) => {
     const { nro_documento, cliente, productos, totales, condiciones } = req.body;
 
     try {
-        await pool.query('BEGIN'); // Iniciar transacción
-
+        await pool.query('BEGIN'); // Iniciar transacció
         // 1. Insertar Cabecera
         const ventaRes = await pool.query(
             `INSERT INTO ventas (nro_documento, rut, razon_social, neto_total, iva_total, total_final, condiciones) 
@@ -20,9 +19,18 @@ router.post('/ventas/grabar', async (req, res) => {
         for (let prod of productos) {
             // Guardar detalle
             await pool.query(
-                `INSERT INTO venta_detalles (venta_id, producto_codigo, cantidad, precio_unitario, neto_linea) 
-                 VALUES ($1, $2, $3, $4, $5)`,
-                [ventaId, prod.codigo, prod.cantidad, prod.precioUnitario, prod.neto]
+                `INSERT INTO venta_detalles (venta_id, producto_codigo, descuento, cantidad, precio_unitario, neto, iva, total) 
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+                [
+                    ventaId, 
+                    prod.codigo, 
+                    prod.precioDescuento, // <--- Asegúrate que diga exactamente esto
+                    prod.cantidad, 
+                    prod.precioUnitario, 
+                    prod.neto, 
+                    prod.iva, 
+                    prod.total
+                ]
             );
 
             // Descontar stock en tabla productos
@@ -58,7 +66,7 @@ router.get('/ventas/proximo-numero', async (req, res) => {
         
         // Si es NULL (tabla vacía), empezamos en 1, sino sumamos 1
         const proximo = (ultimo === null) ? 1 : ultimo + 1;
-        
+        console.log(proximo);
         res.json({ proximo });
     } catch (error) {
         console.error('Error al generar correlativo:', error);

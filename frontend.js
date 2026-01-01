@@ -23,6 +23,7 @@ function handleLogin() {
       // 2. 🟢 CARGAR DATOS SOLO AHORA
       loadDashboard(); 
       loadListas();
+      obtenerProximoNumeroDocumento();
     } else {
       document.getElementById('login-msg').innerHTML = `<p style="color:red">${data.message}</p>`;
     }
@@ -214,15 +215,17 @@ function registrarMovimiento(e) {
         condiciones: document.getElementById('v-tipo').value,
         cliente: {
             rut: document.getElementById('v-cliente').value, // ID Corregido
-            nombre: document.getElementById('v-razon_social').value // ID Corregido
+            razon_social: document.getElementById('v-razon_social').value // ID Corregido
         },
-        productos: listaVenta,
-        totales: {
             // Quitamos puntos y convertimos a número
-            neto: parseInt(document.getElementById('total-final-neto').value.replace(/\./g, '')) || 0,
-            iva: parseInt(document.getElementById('total-final-iva').value.replace(/\./g, '')) || 0,
-            total: parseInt(document.getElementById('total-final-total').value.replace(/\./g, '')) || 0
-        }
+         productos: listaVenta,
+         totales: {
+        // Usamos Number() y quitamos cualquier carácter no numérico excepto el punto decimal
+        neto: Number(document.getElementById('total-final-neto').value.replace(/\./g, '').replace(',', '.')),
+        iva: Number(document.getElementById('total-final-iva').value.replace(/\./g, '').replace(',', '.')),
+        total: Number(document.getElementById('total-final-total').value.replace(/\./g, '').replace(',', '.'))
+    }
+        
     };
 
     try {
@@ -238,7 +241,7 @@ function registrarMovimiento(e) {
             alert("¡Éxito! Venta registrada.");
             LimpiarCamposFormVentas();
             quitarElemento();
-            obtenerProximoNumeroDocumento();
+            await obtenerProximoNumeroDocumento();
             
         } else {
             alert("Error: " + (result.error || result.message));
@@ -583,7 +586,7 @@ function agregarALaLista() {
         console.log("Producto actualizado:", codigo);
     } else if (precioDescuento > 0 || precioDescuento <=10) {
 
-    
+         
         // --- CASO: PRODUCTO NUEVO con descuento---
         const precioFinal = Math.round(precioUnitario-((precioUnitario * precioDescuento)/100));
         const netoLinea = Number(cantidad * ((precioFinal / 1.19).toFixed(1)));
@@ -591,11 +594,12 @@ function agregarALaLista() {
         const totalLinea = Math.round(netoLinea + ivaLinea);
         
 
-        listaVenta.push({
+      listaVenta.push({
             codigo,
             nombre,
             cantidad,
-            precioDescuento,
+            precioDescuento: precioDescuento, // Verificado
+            precioUnitario: precioFinal,
             neto: netoLinea,
             iva: ivaLinea,
             total: totalLinea
@@ -610,14 +614,15 @@ function agregarALaLista() {
         
 
         listaVenta.push({
-            codigo,
-            nombre,
-            cantidad,
-            precioDescuento,
-            neto: netoLinea,
-            iva: ivaLinea,
-            total: totalLinea
-        });
+        codigo,
+        nombre,
+        cantidad,
+        precioDescuento: 0, // <--- AGREGA ESTO PARA QUE NO LLEGUE VACÍO
+        precioUnitario: precioUnitario,
+        neto: netoLinea,
+        iva: ivaLinea,
+        total: totalLinea
+    });
         console.log("Producto nuevo agregado:", codigo);
 
     }
@@ -697,21 +702,25 @@ async function obtenerProximoNumeroDocumento() {
     try {
         const response = await fetch(`${API}/ventas/proximo-numero`);
         const data = await response.json();
-        
-        // Asignamos el valor al campo de texto (txt-nro-boleta)
         const inputBoleta = document.getElementById('txt-nro-boleta');
+
         if (inputBoleta) {
-            inputBoleta.value = data.proximo;
+            // Asignamos el número. Si quieres formato 000001 usa: data.proximo.toString().padStart(6, '0')
+            inputBoleta.value = data.proximo; 
+            console.log("Siguiente folio cargado:", data.proximo);
         }
     } catch (error) {
-        console.error('Error:', error);
+        console.error('Error al obtener el número de documento:', error);
+        const inputBoleta = document.getElementById('txt-nro-boleta');
+        if (inputBoleta) inputBoleta.value = "Error";
     }
 }
 
-
-document.addEventListener('seccion-ventas', () => {
-    obtenerProximoNumeroDocumento(); // Nombre corregido
+// ELIMINA ESTA PARTE QUE TIENES AL FINAL DE TU ARCHIVO:
+/* document.addEventListener('seccion-ventas', () => {
+    obtenerProximoNumeroDocumento(); 
 });
+*/
 
 function validarMinimo(input) {
     let valor = parseInt(input.value);
