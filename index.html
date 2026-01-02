@@ -246,24 +246,52 @@
         </div>
       </div>
 <!-- clientes -->
+ 
  <section id="seccion-clientes" class="tab-content">
+
   <div class="card">
     <div class="card-header">Registrar Nuevo Cliente</div>
     <div class="card-body">
-      <div class="form-group" style="display: grid; gap: 20px;">
-        <input type="text" id="c-rut" placeholder="RUT Empresa">
-        <input type="text" id="c-razon_social" placeholder="Razon Social">
-        <input type="text" id="c-giro" placeholder="giro">
-        <textarea id="c-dir" placeholder="Dirección"></textarea>
-        <input type="text" id="c-tel" placeholder="Teléfono">
-        
-        
-        <button class="btn btn-primary" onclick="guardarCliente()">Guardar Cliente</button>
-      </div>
-      <div id="c-msg"></div>
-    </div>
-  </div>
+  
+           <!-- formulario cliente -->
+        <div class="form-row-inline">
+          
+       <div class="form-group">
+          <label for="c-rut">Rut Empresa</label>
+          <input type="text" id="c-rut">
+          <label for="c-razon_social">Razon Social</label>
+          <input type="text" id="c-razon_social">
+       </div>
 
+        <div class="form-group">
+          <label for="c-giro">Giro</label>
+          <input type="text" id="c-giro">
+          <label for="Dirección">Direccion</label>
+          <input id="c-dir">
+        </div>
+      </div>
+      
+      <div class="form-row-inline">
+        <div class="form-group">
+           <label for="c-tel">Telefono</label>
+           <input type="text" id="c-tel">
+          </div>
+        
+
+         
+           <div class="form-group">
+           <button class="btn btn-primary" onclick="guardarCliente()">Guardar Cliente</button>
+           </div>
+         </div>
+        
+     
+    
+      <div id="c-msg"></div>
+      
+    
+  </div>
+ </div>
+ 
   <div class="card" style="margin-top: 20px;">
     <div class="card-header">Lista de Clientes</div>
     <div class="card-body">
