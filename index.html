@@ -34,7 +34,7 @@
       <li class="nav-item"><a class="nav-link" onclick="showTab('seccion-ventas', event); obtenerProximoNumeroDocumento()">💰 Registrar Venta</a></li>
       <li class="nav-item"><a class="nav-link" onclick="showTab('seccion-clientes', event)">👥 Clientes</a></li>
       <li class="nav-item"><a class="nav-link" onclick="showTab('inventario', event)">📊 Inventario</a></li>
-      <li class="nav-item"><a class="nav-link" onclick="showTab('reportes', event)">📈 Reportes</a></li>
+      <li class="nav-item"><a class="nav-link" onclick="showTab('reporte-ventas-seccion', event)">📈 Reportes</a></li>
       <li class="nav-item"><a class="nav-link" onclick="showTab('buscar', event)">🔍 Buscar</a></li>
       <li class="nav-item"><a class="nav-link" onclick="showTab('configuracion', event)">⚙️ Configuración</a></li>
     </ul>
@@ -328,59 +328,41 @@
 
 
 <!-- REPORTES -->
-  <div id="reportes" class="tab-content">
-        <div class="content-header">
-          <h2>Reportes y Análisis</h2>
+
+  <section id="reporte-ventas-seccion" class="tab-content">
+  <div class="content-header">
+    <h2>📊 Reporte de Ventas Diarias</h2>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <div class="form-row-inline">
+        <div class="form-group">
+          <label>Seleccionar Fecha:</label>
+          <input type="date" id="fecha-reporte-ventas">
         </div>
-        <div class="content-body">
-          <div class="card">
-            <div class="card-header">Historial de Movimientos</div>
-            <div class="card-body">
-              <div class="form-grid">
-                <div class="form-group">
-                  <label for="fechaDesde">Fecha Desde</label>
-                  <input id="fechaDesde" type="date" required>
-                </div>
-                <div class="form-group">
-                  <label for="fechaHasta">Fecha Hasta</label>
-                  <input id="fechaHasta" type="date" required>
-                </div>
-                <div class="form-group">
-                  <label for="filtroTipo">Filtrar por Tipo</label>
-                  <select id="filtroTipo">
-                    <option value="">Todos los movimientos</option>
-                    <option value="INGRESO">Solo Ingresos</option>
-                    <option value="SALIDA">Solo Salidas</option>
-                    <option value="AJUSTE_POSITIVO">Solo Ajustes Positivos</option>
-                    <option value="AJUSTE_NEGATIVO">Solo Ajustes Negativos</option>
-                  </select>
-                </div>
-              </div>
-              <div class="actions">
-                <button class="btn btn-primary" onclick="mostrarHistorial()">Generar Reporte</button>
-                <button class="btn btn-success" onclick="exportarReporte()">Exportar Reporte</button>
-              </div>
-              <div class="table-container">
-                <div id="historialTable">
-                  <h3>Historial de Movimientos de Inventario</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Fecha</th>
-                            <th>Producto (Código)</th>
-                            <th>Tipo</th>
-                            <th>Cantidad</th>
-                            <th>Observación</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabla-movimientos">
-                  </tbody>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <button class="btn btn-primary" onclick="consultarReporteVentas()">Consultar</button>
       </div>
+      
+      <div class="table-container">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Folio</th>
+              <th>RUT</th>
+              <th>Cliente</th>
+              <th>Neto</th>
+              <th>IVA</th>
+              <th>Total</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-reporte-ventas">
+            </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
 
 <!-- BUSCAR -->
 

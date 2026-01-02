@@ -730,3 +730,50 @@ function validarMinimo(input) {
         input.value = 1;
     }
 }
+
+async function consultarReporteVentas() {
+    const fecha = document.getElementById('fecha-reporte-ventas').value;
+    if (!fecha) return alert("Selecciona una fecha");
+
+    const res = await fetch(`${API}/ventas/reporte?fecha=${fecha}`);
+    const ventas = await res.json();
+    
+    const tabla = document.getElementById('tabla-reporte-ventas');
+    tabla.innerHTML = '';
+
+    ventas.forEach(v => {
+        tabla.innerHTML += `
+            <tr>
+                <td>${v.nro_documento}</td>
+                <td>${v.rut}</td>
+                <td>${v.razon_social}</td>
+                <td>$${Number(v.neto_total).toLocaleString()}</td>
+                <td>$${Number(v.iva_total).toLocaleString()}</td>
+                <td>$${Number(v.total_final).toLocaleString()}</td>
+                <td>
+                    <button class="btn btn-secondary" onclick="verDetalleVenta('${v.nro_documento}')">
+                        👁️ Ver Detalle
+                    </button>
+                </td>
+            </tr>`;
+    });
+}
+
+async function verDetalleVenta(nro) {
+    const res = await fetch(`${API}/ventas/detalle/${nro}`);
+    const detalles = await res.json();
+    
+    let contenido = `<h4>Documento N° ${nro}</h4><table class="table">
+        <thead><tr><th>Producto</th><th>Cant.</th><th>Total</th></tr></thead><tbody>`;
+    
+    detalles.forEach(d => {
+        contenido += `<tr><td>${d.nombre}</td><td>${d.cantidad}</td><td>$${Number(d.total).toLocaleString()}</td></tr>`;
+    });
+    
+    contenido += `</tbody></table>`;
+    
+    // Usamos tu modal existente
+    document.getElementById('modal-titulo').innerText = "Detalle de Venta";
+    document.getElementById('modal-mensaje').innerHTML = contenido;
+    document.getElementById('modal-notificacion').style.display = 'flex';
+}

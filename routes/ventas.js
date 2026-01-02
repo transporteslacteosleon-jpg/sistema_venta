@@ -74,4 +74,40 @@ router.get('/ventas/proximo-numero', async (req, res) => {
     }
 });
 
+
+// Obtener historial de ventas por fecha
+router.get('/ventas/reporte', async (req, res) => {
+    const { fecha } = req.query; // Formato esperado: 'YYYY-MM-DD'
+    try {
+        const { rows } = await pool.query(
+            `SELECT nro_documento, rut, razon_social, neto_total, iva_total, total_final, fecha_emision 
+             FROM ventas 
+             WHERE DATE(fecha_emision) = $1 
+             ORDER BY nro_documento DESC`,
+            [fecha]
+        );
+        res.json(rows);
+    } catch (error) {
+        console.error('Error al obtener reporte:', error);
+        res.status(500).json({ error: 'Error al cargar el reporte' });
+    }
+});
+
+// Obtener detalle de una venta específica
+router.get('/ventas/detalle/:nro', async (req, res) => {
+    try {
+        const { rows } = await pool.query(
+            `SELECT vd.*, p.nombre 
+             FROM venta_detalles vd
+             JOIN productos p ON vd.producto_codigo = p.codigo
+             JOIN ventas v ON vd.venta_id = v.id
+             WHERE v.nro_documento = $1`,
+            [req.params.nro]
+        );
+        res.json(rows);
+    } catch (error) {
+        res.status(500).json({ error: 'Error al obtener detalle' });
+    }
+});
+
 module.exports = router;
