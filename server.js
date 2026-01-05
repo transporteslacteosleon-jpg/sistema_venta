@@ -7,6 +7,10 @@ const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
+
+// Servir archivos estáticos (index.html, styles.css, frontend.js)
+// Asumiendo que están en la misma carpeta que server.js
+app.use(express.static(__dirname));
 // ... otras importaciones
 app.use('/api', require('./routes/auth')); 
 app.use('/api', require('./routes/dashboard'));

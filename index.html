@@ -20,18 +20,23 @@
 </div>
 
 <div id="main-app" style="display: none;">
-
-
 <div class="app-container">
+
+  <button id="hamburger-btn" class="hamburger-btn" onclick="toggleSidebar()">
+  <span></span>
+  <span></span>
+  <span></span>
+</button>
+
   <nav class="sidebar">
     <div class="sidebar-header">
       <h1>LACTEOS LEON</h1>
     </div>
     <ul class="nav-menu">
-      <li class="nav-item"><a class="nav-link active" onclick="showTab('dashboard', event)">📊 Dashboard</a></li>
-      <li class="nav-item"><a class="nav-link" onclick="showTab('productos', event)">📦 Nuevo producto</a></li>
+      <li class="nav-item"><a class="nav-link active" onclick="showTab('dashboard', event)">✅ Dashboard</a></li>
+      <li class="nav-item"><a class="nav-link" onclick="showTab('productos', event)">📦 Productos</a></li>
       <li class="nav-item"><a class="nav-link" onclick="showTab('movimientos', event)">📋 Movimientos</a></li>
-      <li class="nav-item"><a class="nav-link" onclick="showTab('seccion-ventas', event); obtenerProximoNumeroDocumento()">💰 Registrar Venta</a></li>
+      <li class="nav-item"><a class="nav-link" onclick="showTab('seccion-ventas', event); obtenerProximoNumeroDocumento()">💰 Ventas</a></li>
       <li class="nav-item"><a class="nav-link" onclick="showTab('seccion-clientes', event)">👥 Clientes</a></li>
       <li class="nav-item"><a class="nav-link" onclick="showTab('inventario', event)">📊 Inventario</a></li>
       <li class="nav-item"><a class="nav-link" onclick="showTab('reporte-ventas-seccion', event)">📈 Reportes</a></li>
@@ -44,7 +49,7 @@
 
 <!-- DASHBOARD -->
 <section id="dashboard" class="tab-content active">
-  <div class="content-header"><h2>Dashboard General</h2></div>
+  <div class="content-header"><h2>✅ Dashboard General</h2></div>
   <div class="content-body">
     <div class="stats-grid" id="statsGrid"></div>
     <div class="card">
@@ -62,7 +67,7 @@
 <!-- form ventas -->
 <section id="seccion-ventas" class="tab-content">
   <div class="card">
-    <div class="card-header">Generar Factura / Boleta / Nota de Venta</div>
+    <div class="card-header">💰 Generar Factura / Boleta / Nota de Venta</div>
     <div class="card-body">
       <!-- numero de documento y tipo de documento  -->
       <div class="form-group">
@@ -166,19 +171,29 @@
 
 <!-- PRODUCTOS -->
 <section id="productos" class="tab-content">
-  <div class="content-header"><h2>Gestión de Productos</h2></div>
+  <div class="content-header"><h2>📦Gestión de Productos</h2></div>
   <div class="content-body">
     <div class="card">
       <div class="card-header">Registrar Nuevo Producto</div>
       <div class="card-body">
         <form id="formProducto" onsubmit="registrarProducto(event)">
-          <div class="form-grid">
-            <div class="form-group"><label>Código *</label><input id="codigoProd" required></div>
-            <div class="form-group"><label>Nombre *</label><input id="nombreProd" required></div>
+        
+
+         <div class="form-row-inline">
+          <div class="form-group" style="position: relative;">
+            <label>Código *</label><input id="codigoProd" required>
+            <label>Nombre *</label><input id="nombreProd" required>
+          </div>
+        </div>
+
             <div class="form-group"><label>Unidad</label><select id="unidadProd"></select></div>
             <div class="form-group"><label>Grupo</label><select id="grupoProd"></select></div>
             <div class="form-group"><label>Stock Mínimo</label><input id="stockMinProd" type="number" value="0"></div>
-          </div>
+            <div class="form-group"><label>Precio Costo</label><input type="number" id="prod-costo" step="0.01"></div>
+            <div class="form-group"><label>Precio Venta</label><input type="number" id="prod-venta" step="0.01"></div>
+          
+
+
           <div class="actions">
             <button class="btn btn-success" type="submit">Registrar Producto</button>
             <button class="btn btn-secondary" type="button" onclick="">Limpiar</button>
@@ -194,7 +209,7 @@
 <!-- MOVIMIENTOS -->
  <div id="movimientos" class="tab-content">
         <div class="content-header">
-          <h2>Registro de Movimientos</h2>
+          <h2>📋 Registro de Movimientos</h2>
         </div>
         <div class="content-body">
           <div class="card">
@@ -250,7 +265,7 @@
  <section id="seccion-clientes" class="tab-content">
 
   <div class="card">
-    <div class="card-header">Registrar Nuevo Cliente</div>
+    <div class="card-header">👥  Registrar Nuevo Cliente</div>
     <div class="card-body">
   
            <!-- formulario cliente -->
@@ -306,7 +321,7 @@
 <!-- INVENTARIO -->
  <div id="inventario" class="tab-content">
         <div class="content-header">
-          <h2>Control Inventario</h2>
+          <h2> 📊 Control Inventario</h2>
         </div>
         <div class="content-body">
           <div class="card">
@@ -331,7 +346,7 @@
 
   <section id="reporte-ventas-seccion" class="tab-content">
   <div class="content-header">
-    <h2>📊 Reporte de Ventas Diarias</h2>
+    <h2>📈 Reporte de Ventas Diarias</h2>
   </div>
   <div class="card">
     <div class="card-body">
@@ -368,7 +383,7 @@
 
       <div id="buscar" class="tab-content">
         <div class="content-header">
-          <h2>Búsqueda de Productos</h2>
+          <h2>🔍 Búsqueda de Productos</h2>
         </div>
         <div class="content-body">
           <div class="card">
@@ -402,7 +417,7 @@
 </div>
 <!-- CONFIGURACION -->
 <section id="configuracion" class="tab-content">
-  <div class="content-header"><h2>Configuración</h2></div>
+  <div class="content-header"><h2>⚙️ Configuración</h2></div>
   <div class="content-body"><div id="configResults"></div></div>
 </section>
 

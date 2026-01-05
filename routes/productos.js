@@ -3,15 +3,15 @@ const router = express.Router();
 const pool = require('../db'); // conexión PostgreSQL
 
 router.post('/productos', async (req, res) => {
-  const { codigo, nombre, unidad, grupo, stock_min } = req.body;
+  const { codigo, nombre, unidad, grupo, stock_min, precio_costo, precio_venta } = req.body;
   if (!codigo || !nombre || !unidad) {
         return res.status(400).json('Faltan datos requeridos (código, nombre o unidad).');
     }
 
   try { // << AÑADIR TRY
     await pool.query(
-      'INSERT INTO productos (codigo, nombre, unidad, grupo, stock_min) VALUES ($1,$2,$3,$4,$5)',
-      [codigo, nombre, unidad, grupo, stock_min]
+      'INSERT INTO productos (codigo, nombre, unidad, grupo, stock_min, precio_costo, precio_venta) VALUES ($1,$2,$3,$4,$5,$6,$7)',
+      [codigo, nombre, unidad, grupo, stock_min, precio_costo, precio_venta]
     );
 
     res.status(201).json('Producto registrado correctamente'); // << Status 201 Created

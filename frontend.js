@@ -139,14 +139,22 @@ function loadListas() {
 
 /* ================= PRODUCTOS ================= */
 function registrarProducto(e) {
+  
   e.preventDefault();
+
+  // 1. CAPTURAS LOS VALORES DE LOS NUEVOS INPUTS
+  const costo = document.getElementById('prod-costo').value;
+  const venta = document.getElementById('prod-venta').value;
 
   const producto = {
     codigo: codigoProd.value.trim().toUpperCase(),
     nombre: nombreProd.value.trim(),
     unidad: unidadProd.value,
     grupo: grupoProd.value,
-    stock_min: Number(stockMinProd.value)||0
+    stock_min: Number(stockMinProd.value)||0,
+    // 2. LOS AGREGAS AL OBJETO QUE SE ENVÍA AL BACKEND
+    precio_costo: Number(costo) || 0,
+    precio_venta: Number(venta) || 0
   };
 
   fetch(`${API}/productos`,{
@@ -319,7 +327,7 @@ function seleccionarProducto(cliente) {
     // Rellenamos el campo con el nombre y guardamos el objeto
     document.getElementById('v-codigo').value = cliente.codigo;
     document.getElementById('v-producto').value = cliente.nombre;
-    document.getElementById('v-total').value = cliente.valor_venta;
+    document.getElementById('v-total').value = cliente.precio_venta;
     document.getElementById('sugerencias-productos').style.display = 'none';
     
     // Guardamos el cliente seleccionado para usarlo al procesar la venta
@@ -501,7 +509,7 @@ function displayStockTable(data) {
   let html = `<table class="table">
     <thead>
       <tr><th>Código</th><th>Producto</th><th>Stock Actual</th><th>Mínimo</th></tr>
-    </thead>
+    </thead>a
     <tbody>`;
   
   data.forEach(item => {
@@ -776,4 +784,28 @@ async function verDetalleVenta(nro) {
     document.getElementById('modal-titulo').innerText = "Detalle de Venta";
     document.getElementById('modal-mensaje').innerHTML = contenido;
     document.getElementById('modal-notificacion').style.display = 'flex';
+}
+function toggleSidebar() {
+    // Solo permitimos abrir/cerrar si la pantalla es menor o igual a 770px
+    if (window.innerWidth <= 770) {
+        const sidebar = document.getElementById('sidebar');
+        const btn = document.getElementById('hamburger-btn');
+        
+        sidebar.classList.toggle('active');
+        // Opcional: animar el botón a una 'X'
+        btn.classList.toggle('open');
+    }
+}
+
+// Función recomendada para usar en los botones del menú
+function navegar(tabId, event) {
+    showTab(tabId, event);
+    
+    // Si estamos en móvil, cerramos el menú automáticamente al elegir una opción
+    if (window.innerWidth <= 770) {
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar.classList.contains('active')) {
+            toggleSidebar();
+        }
+    }
 }

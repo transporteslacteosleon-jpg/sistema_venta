@@ -62,7 +62,7 @@ router.post('/movimientos', async (req, res) => {
 
     res.json({
       success: true,
-      message: 'Movimiento registrado y stock actualizado correctamente'
+      message: 'Movimiento registrado y stock actualizado correctamente',
     });
 
   } catch (error) {
