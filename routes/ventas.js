@@ -4,16 +4,17 @@ const pool = require('../db'); // conexión PostgreSQL
 
 router.post('/ventas/grabar', async (req, res) => {
 
-    const esPagada = Forma_pago === 'CONTADO';
-    const { nro_documento, cliente, productos, totales, condiciones, Forma_pago } = req.body;
-
+    
+    const { nro_documento, cliente, productos, totales, condiciones, forma_pago } = req.body;
+    const esPagada = forma_pago === 'CONTADO';
+    
     try {
         await pool.query('BEGIN'); // Iniciar transacció
         // 1. Insertar Cabecera
         const ventaRes = await pool.query(
             `INSERT INTO ventas (nro_documento, rut, razon_social, neto_total, iva_total, total_final, condiciones,forma_pago,pagada) 
              VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
-            [nro_documento, cliente.rut, cliente.razon_social, totales.neto, totales.iva, totales.total, condiciones, Forma_pago, esPagada]
+            [nro_documento, cliente.rut, cliente.razon_social, totales.neto, totales.iva, totales.total, condiciones, forma_pago, esPagada]
         );
         const ventaId = ventaRes.rows[0].id;
 
