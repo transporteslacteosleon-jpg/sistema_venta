@@ -221,6 +221,7 @@ function registrarMovimiento(e) {
     const datosVenta = {
         nro_documento: document.getElementById('txt-nro-boleta').value,
         condiciones: document.getElementById('v-tipo').value,
+        forma_pago:document.getElementById('venta-condicion').value,
         cliente: {
             rut: document.getElementById('v-cliente').value, // ID Corregido
             razon_social: document.getElementById('v-razon_social').value // ID Corregido
@@ -509,7 +510,7 @@ function displayStockTable(data) {
   let html = `<table class="table">
     <thead>
       <tr><th>Código</th><th>Producto</th><th>Stock Actual</th><th>Mínimo</th></tr>
-    </thead>a
+    </thead>
     <tbody>`;
   
   data.forEach(item => {
@@ -785,27 +786,23 @@ async function verDetalleVenta(nro) {
     document.getElementById('modal-mensaje').innerHTML = contenido;
     document.getElementById('modal-notificacion').style.display = 'flex';
 }
-function toggleSidebar() {
-    // Solo permitimos abrir/cerrar si la pantalla es menor o igual a 770px
-    if (window.innerWidth <= 770) {
-        const sidebar = document.getElementById('sidebar');
-        const btn = document.getElementById('hamburger-btn');
-        
-        sidebar.classList.toggle('active');
-        // Opcional: animar el botón a una 'X'
-        btn.classList.toggle('open');
-    }
-}
 
-// Función recomendada para usar en los botones del menú
-function navegar(tabId, event) {
-    showTab(tabId, event);
+// validar cliente antes de la venta
+async function validarDeudaCliente(rut) {
+    const res = await fetch(`${API}/clientes/deuda/${rut}`);
+    const data = await res.json();
     
-    // Si estamos en móvil, cerramos el menú automáticamente al elegir una opción
-    if (window.innerWidth <= 770) {
-        const sidebar = document.getElementById('sidebar');
-        if (sidebar.classList.contains('active')) {
-            toggleSidebar();
+    // Si la condición es crédito, verificamos si excede su límite
+    const condicion = document.getElementById('venta-condicion').value;
+    const totalVentaActual = calcularTotalVenta(); // Tu función que suma el carrito
+
+    if (condicion === 'CREDITO') {
+        const saldoDisponible = data.limite_credito - data.deuda_actual;
+        if (totalVentaActual > saldoDisponible) {
+            alert(`¡Alerta! El cliente excede su límite de crédito. 
+                   Saldo disponible: $${saldoDisponible.toLocaleString()}`);
+            return false;
         }
     }
+    return true;
 }
