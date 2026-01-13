@@ -230,9 +230,13 @@ function registrarMovimiento(e) {
          productos: listaVenta,
          totales: {
         // Usamos Number() y quitamos cualquier carácter no numérico excepto el punto decimal
-        neto: Number(document.getElementById('total-final-neto').value.replace(/\./g, '').replace(',', '.')),
-        iva: Number(document.getElementById('total-final-iva').value.replace(/\./g, '').replace(',', '.')),
-        total: Number(document.getElementById('total-final-total').value.replace(/\./g, '').replace(',', '.'))
+       //  neto: Number(document.getElementById('total-final-neto').value.replace(/\./g, '').replace(',', '.')),
+        // iva: Number(document.getElementById('total-final-iva').value.replace(/\./g, '').replace(',', '.')),
+         //total: Number(document.getElementById('total-final-total').value.replace(/\./g, '').replace(',', '.'))
+        
+         neto: limpiarMonto('total-final-neto'),
+         iva: limpiarMonto('total-final-iva'),
+         total: limpiarMonto('total-final-total')
     }
         
     };
@@ -598,7 +602,7 @@ function agregarALaLista() {
          
         // --- CASO: PRODUCTO NUEVO con descuento---
         const precioFinal = Math.round(precioUnitario-((precioUnitario * precioDescuento)/100));
-        const netoLinea = Number(cantidad * ((precioFinal / 1.19).toFixed(1)));
+        const netoLinea = Math.round(cantidad * (precioFinal / 1.19));
         const ivaLinea = Math.round(netoLinea * 0.19);
         const totalLinea = Math.round(netoLinea + ivaLinea);
         
@@ -697,9 +701,9 @@ function actualizarTablaYTotales() {
     });
 
     // 4. Actualizar el cuadro de "Totales" inferior
-    document.getElementById('total-final-neto').value = netoGlobal.toLocaleString();
-    document.getElementById('total-final-iva').value = ivaGlobal.toLocaleString();
-    document.getElementById('total-final-total').value = totalGlobal.toLocaleString();
+    document.getElementById('total-final-neto').value = netoGlobal;
+    document.getElementById('total-final-iva').value = ivaGlobal;
+    document.getElementById('total-final-total').value = totalGlobal;
 }
 
 function quitarElemento(index) {
@@ -805,4 +809,12 @@ async function validarDeudaCliente(rut) {
         }
     }
     return true;
+}
+
+function limpiarMonto(id) {
+    let rawValue = document.getElementById(id).value.toString();
+    // Solo reemplazamos la coma por punto si existe, 
+    // pero NO eliminamos los puntos porque son el decimal en JS.
+    let limpio = rawValue.replace(',', '.'); 
+    return parseFloat(limpio) || 0;
 }

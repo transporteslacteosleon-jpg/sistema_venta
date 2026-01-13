@@ -27,7 +27,7 @@ router.post('/ventas/grabar', async (req, res) => {
                 [
                     ventaId, 
                     prod.codigo, 
-                    prod.precioDescuento, // <--- Asegúrate que diga exactamente esto
+                    prod.precioDescuento, 
                     prod.cantidad, 
                     prod.precioUnitario, 
                     prod.neto, 
