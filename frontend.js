@@ -112,14 +112,18 @@ function loadDashboard() {
     .catch(() => showMessage('statsGrid','Error dashboard','error'));
 }
 
-/* ================= LISTAS ================= */
+/* ================= LISTAS CON REINTENTO AUTOMÁTICO ================= */
 function loadListas() {
   fetch(`${API}/listas`)
-    .then(res => res.json())
+    .then(res => {
+      if (!res.ok) throw new Error('Error en red');
+      return res.json();
+    })
     .then(data => {
       const unidad = document.getElementById('unidadProd');
       const grupo = document.getElementById('grupoProd');
 
+      // Limpiar y cargar opciones
       unidad.innerHTML = '';
       grupo.innerHTML = '';
 
@@ -130,10 +134,15 @@ function loadListas() {
       data.grupos.forEach(g =>
         grupo.innerHTML += `<option value="${g}">${g}</option>`
       );
+      
+      console.log("Listas cargadas exitosamente");
     })
     .catch(err => {
-      console.error(err);
-      alert('Error cargando listas');
+      // En lugar de alert('Error cargando listas'), reintentamos en 2 segundos
+      console.warn("Fallo al cargar listas, reintentando en 2 segundos...");
+      setTimeout(() => {
+        loadListas();
+      }, 2000);
     });
 }
 
@@ -229,10 +238,6 @@ function registrarMovimiento(e) {
             // Quitamos puntos y convertimos a número
          productos: listaVenta,
          totales: {
-        // Usamos Number() y quitamos cualquier carácter no numérico excepto el punto decimal
-       //  neto: Number(document.getElementById('total-final-neto').value.replace(/\./g, '').replace(',', '.')),
-        // iva: Number(document.getElementById('total-final-iva').value.replace(/\./g, '').replace(',', '.')),
-         //total: Number(document.getElementById('total-final-total').value.replace(/\./g, '').replace(',', '.'))
         
          neto: limpiarMonto('total-final-neto'),
          iva: limpiarMonto('total-final-iva'),
