@@ -12,7 +12,7 @@ router.post('/ventas/grabar', async (req, res) => {
         await pool.query('BEGIN'); // Iniciar transacció
         // 1. Insertar Cabecera
         const ventaRes = await pool.query(
-            `INSERT INTO ventas (nro_documento, rut, razon_social, neto_total, iva_total, total_final, condiciones,forma_pago,pagada) 
+            `INSERT INTO ventas (nro_documento, rut, razon_social, neto_total, iva_total, total_final, tipo_documento,forma_pago,pagada) 
              VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
             [nro_documento, cliente.rut, cliente.razon_social, totales.neto, totales.iva, totales.total, condiciones, forma_pago, esPagada]
         );
@@ -113,5 +113,23 @@ router.get('/ventas/detalle/:nro', async (req, res) => {
         res.status(500).json({ error: 'Error al obtener detalle' });
     }
 });
+
+// Asegúrate que esté escrito exactamente así
+router.get('/ventas/proximo/:tipo', async (req, res) => {
+    const { tipo } = req.params;
+    try {
+        const result = await pool.query(
+            'SELECT MAX(nro_documento) as ultimo FROM ventas WHERE tipo_documento = $1',
+            [tipo]
+        );
+        const proximo = (parseInt(result.rows[0].ultimo) || 0) + 1;
+        res.json({ proximo });
+    } catch (error) {
+        console.error('Error al generar correlativo:', error);
+        res.status(500).json({ error: 'Error interno' });
+    }
+});
+
+module.exports = router; // Esta línea siempre al final
 
 module.exports = router;

@@ -73,7 +73,7 @@
 
     <div class="form-group">
         <label for="v-tipo">Tipo Documento</label>
-        <select id="v-tipo">
+        <select id="v-tipo" onchange="obtenerProximoNumeroDocumento()">
             <option value="NOTA DE VENTA">Nota De Venta</option>
             <option value="BOLETA">Boleta</option>
             <option value="FACTURA">Factura</option>
@@ -81,6 +81,7 @@
     </div>
     </div>
 </div>
+
         <!-- cliente y razon social  -->
         <div class="form-row-inline">
         <div class="form-group" style="position: relative;"> 

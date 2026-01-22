@@ -717,35 +717,26 @@ function quitarElemento(index) {
 }
 
 async function obtenerProximoNumeroDocumento() {
+    // 1. El ID correcto en tu HTML es 'v-tipo' (Línea 102 de index.html)
+    const selector = document.getElementById('v-tipo');
+    if (!selector) return;
+    const tipo = selector.value; 
+
     try {
-        const response = await fetch(`${API}/ventas/proximo-numero`);
-        const data = await response.json();
-        const inputBoleta = document.getElementById('txt-nro-boleta');
-
-        if (inputBoleta) {
-            // Asignamos el número. Si quieres formato 000001 usa: data.proximo.toString().padStart(6, '0')
-            inputBoleta.value = data.proximo; 
-            console.log("Siguiente folio cargado:", data.proximo);
+        // 2. IMPORTANTE: Verifica que API no tenga una '/' al final para evitar //api//ventas
+        const res = await fetch(`${API}/ventas/proximo/${tipo}`);
+        
+        if (!res.ok) throw new Error("Ruta no encontrada en el servidor");
+        
+        const data = await res.json();
+        
+        // 3. El ID del campo donde se muestra el número es 'txt-nro-boleta'
+        const inputNro = document.getElementById('txt-nro-boleta');
+        if (inputNro) {
+            inputNro.value = data.proximo;
         }
-    } catch (error) {
-        console.error('Error al obtener el número de documento:', error);
-        const inputBoleta = document.getElementById('txt-nro-boleta');
-        if (inputBoleta) inputBoleta.value = "Error";
-    }
-}
-
-// ELIMINA ESTA PARTE QUE TIENES AL FINAL DE TU ARCHIVO:
-/* document.addEventListener('seccion-ventas', () => {
-    obtenerProximoNumeroDocumento(); 
-});
-*/
-
-function validarMinimo(input) {
-    let valor = parseInt(input.value);
-
-    // Si el usuario escribe algo que no es un número o es menor a 1, lo corregimos
-    if (!isNaN(valor) && valor < 1) {
-        input.value = 1;
+    } catch (err) {
+        console.error("Error obteniendo correlativo:", err);
     }
 }
 
