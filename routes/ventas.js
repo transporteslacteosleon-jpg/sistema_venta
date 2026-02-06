@@ -36,21 +36,26 @@ router.post('/ventas/grabar', async (req, res) => {
                 ]
             );
 
-            // Descontar stock en tabla productos
-            await pool.query(
-                `UPDATE productos SET stock = stock - $1 WHERE codigo = $2`,
-                [prod.cantidad, prod.codigo]
-            );
-
-            // Registrar en historial de movimientos
-            await pool.query(
-                `INSERT INTO movimientos (codigo, tipo, cantidad, observaciones) 
-                 VALUES ($1, 'SALIDA', $2, $3)`,
-                [prod.codigo, prod.cantidad * -1, `Venta Boleta N° ${nro_documento}`]
-            );
+            // 2. CORRECCIÓN: Solo descontar stock si NO es Nota de Venta
+    // Usamos el campo 'condiciones' o 'tipo_documento' según guardes el tipo
+            if (condiciones !== 'NOTA DE VENTA') {
+                await pool.query(
+                    'UPDATE productos SET stock = stock - $1 WHERE codigo = $2',
+                    [prod.cantidad, prod.codigo]
+                );
+                
+                // Registrar movimiento de salida solo si hubo descuento de stock
+                await pool.query(
+                    `INSERT INTO movimientos_stock (producto_codigo, tipo_movimiento, cantidad, motivo) 
+                    VALUES ($1, 'SALIDA', $2, $3)`,
+                    [prod.codigo, prod.cantidad, `Venta ${condiciones} Nro: ${nro_documento}`]
+                );
+            } else {
+                console.log(`Producto ${prod.codigo} no descuenta stock por ser NOTA DE VENTA`);
+            }
         }
 
-        await pool.query('COMMIT'); // Confirmar todo
+        await pool.query('COMMIT'); // Confirmar todo 
         res.json({ success: true, message: "Venta grabada con éxito" });
         
 

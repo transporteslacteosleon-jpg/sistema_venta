@@ -3,7 +3,9 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const app = express();
-const port = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080; // Clever Cloud usa el 8080 por defecto
+server.listen(PORT, () => console.log(`Servidor en puerto ${PORT}`));
+//const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());

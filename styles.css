@@ -562,3 +562,30 @@
     padding: 10px;
     border-top: 1px solid #eee; /* Opcional: una línea divisoria */
 }
+
+/* Ajustes para celulares */
+@media (max-width: 600px) {
+  .login-box {
+    width: 90%;            /* Ocupa casi todo el ancho de la pantalla */
+    padding: 30px 20px;    /* Más espacio interno */
+    max-width: none;       /* Quita límites de ancho */
+  }
+
+  .login-box h2 {
+    font-size: 1.8rem;     /* Título más grande */
+    margin-bottom: 25px;
+  }
+
+  .login-box input {
+    height: 55px;          /* Inputs más altos para facilitar el toque */
+    font-size: 1.2rem;     /* Letra más grande dentro del input */
+    margin-bottom: 20px;
+    padding: 0 15px;
+  }
+
+  .login-box button {
+    height: 60px;          /* Botón de entrada mucho más grande */
+    font-size: 1.4rem;     /* Texto del botón más legible */
+    width: 100%;           /* Asegura que use todo el ancho */
+  }
+}
