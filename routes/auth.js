@@ -7,8 +7,7 @@ router.post('/login', async (req, res) => {
   try {
     const { rows } = await pool.query(
       'SELECT * FROM usuarios WHERE username = $1 AND password = $2',
-      [username, password]
-    );
+      [username, password]);
 
     if (rows.length > 0) {
       res.json({ success: true, user: rows[0].username });

@@ -1,6 +1,6 @@
 //const API = 'http://localhost:3000/api';
 // Esto detecta automáticamente si estás en localhost o en tu dominio real
-const API = window.location.origin + '/api';
+const API = '/sistema/api';
 let listaVenta = []; // Array para almacenar los productos agregados
 let clienteSeleccionado = null
 
@@ -9,6 +9,9 @@ let clienteSeleccionado = null
 function handleLogin() {
   const user = document.getElementById('login-user').value;
   const pass = document.getElementById('login-pass').value;
+
+  console.log("Intentando login a:", `${API}/login`);
+  console.log("Usuario:", user);
 
   fetch(`${API}/login`, {
     method: 'POST',
