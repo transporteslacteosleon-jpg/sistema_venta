@@ -1,6 +1,6 @@
 //const API = 'http://localhost:3000/api';
 // Esto detecta automáticamente si estás en localhost o en tu dominio real
-const API = '/sistema/api';
+const API = '/api';
 let listaVenta = []; // Array para almacenar los productos agregados
 let clienteSeleccionado = null
 

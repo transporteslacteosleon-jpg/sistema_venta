@@ -15,9 +15,10 @@ router.post('/login', async (req, res) => {
       res.status(401).json({ success: false, message: 'Usuario o contraseña incorrectos' });
     }
   } catch (error) {
-    console.error(error);
-    res.status(500).json('Error en el servidor');
-  }
+    console.error("ERROR EN LOGIN:", error);
+    // Cambia el mensaje temporalmente para ver el error en el navegador
+    res.status(500).json({ success: false, message: error.message }); 
+}
 });
 
 module.exports = router;

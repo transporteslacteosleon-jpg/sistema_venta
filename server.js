@@ -1,21 +1,20 @@
-//require('dotenv').config();
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
 
 const app = express();
 
-// 1. Middlewares iniciales
+// 1. Middlewares
 app.use(cors());
 app.use(express.json());
 
-// 2. Servir archivos estáticos
-// Asegúrate de que tus archivos .css y .js estén dentro de una carpeta llamada 'public'
+// 2. Servir estáticos (CSS, JS del frontend)
 app.use(express.static(path.join(__dirname, '../public_html')));
 
-
-// 3. Rutas de la API (Asegúrate de que las carpetas y archivos existan con estos nombres exactos)
-app.use('/api', require('/home/lacteosl/sistema/routes/auth')); 
+// 3. Rutas de la API
+// Si alguna de estas rutas falla, comenta de a una para encontrar el archivo roto
+app.use('/api', require('./routes/auth')); 
 app.use('/api', require('./routes/dashboard'));
 app.use('/api', require('./routes/listas'));
 app.use('/api', require('./routes/productos'));
@@ -25,19 +24,14 @@ app.use('/api', require('./routes/reportes'));
 app.use('/api', require('./routes/ventas'));
 app.use('/api', require('./routes/clientes'));
 
-// 4. Redirección al Index (Catch-all)
-// Si tu index.html está en la RAÍZ, usa la línea de abajo:
-// La expresión (.*) le dice a Express que acepte cualquier cadena de texto sin excepciones
+// 4. Ruta Catch-all (Simplificada al máximo para Express 5)
 app.get(/^(?!\/api).+/, (req, res) => {
-    res.sendFile(path.join(__dirname, '../public_html/index.html'));
+    res.sendFile(path.join(__dirname, '../public_html', 'index.html'));
 });
-// NOTA: Si tu index.html está DENTRO de 'public', cámbialo a:
-// res.sendFile(path.join(__dirname, 'public', 'index.html'));
 
-// 5. Iniciar el servidor (AL FINAL)
+
+// 5. Iniciar
 const PORT = process.env.PORT || 3000; 
 app.listen(PORT, () => {
-    res.sendFile(path.join(__dirname, '../public_html/index.html'));
+    console.log(`Servidor iniciado en puerto ${PORT}`);
 });
-
-console.log('DB HOST:', process.env.DB_HOST);
