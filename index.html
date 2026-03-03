@@ -12,7 +12,7 @@
 <div id="login-overlay" class="login-overlay">
   
   <div class="login-box">
-    <h2>Lácteos León - Acceso</h2>
+    <h2>Lácteos León  Acceso</h2>
     <input type="text" id="login-user" placeholder="Usuario" onkeypress="if(event.key==='Enter') handleLogin()">
     <input type="password" id="login-pass" placeholder="Contraseña" onkeypress="if(event.key==='Enter') handleLogin()">
     <button class="btn btn-primary" onclick="handleLogin()">Entrar</button>
@@ -22,9 +22,9 @@
 
 <div id="main-app" style="display: none;">
 <div class="app-container">
+<button class="menu-toggle" id="btn-hamburguesa" onclick="toggleMenu(event)">☰</button>
 
-  <nav class="sidebar">
-    <div class="sidebar-header">
+  <nav class="sidebar" id="sidebar"><div class="sidebar-header">
       <h1>LACTEOS LEON</h1>
     </div>
     <ul class="nav-menu">
@@ -37,6 +37,9 @@
       <li class="nav-item"><a class="nav-link" onclick="showTab('reporte-ventas-seccion', event)">📈 Reportes</a></li>
       <li class="nav-item"><a class="nav-link" onclick="showTab('buscar', event)">🔍 Buscar</a></li>
       <li class="nav-item"><a class="nav-link" onclick="showTab('configuracion', event)">⚙️ Configuración</a></li>
+      <li class="nav-item logout-item">
+        <a class="nav-link logout-link" onclick="handleLogout()">Logout 🚪</a>
+      </li>
     </ul>
   </nav>
 

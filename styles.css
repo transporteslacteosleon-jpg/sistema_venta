@@ -589,3 +589,108 @@
     width: 100%;           /* Asegura que use todo el ancho */
   }
 }
+
+/* Botón hamburguesa (oculto por defecto en PC) */
+.menu-toggle {
+    display: none;
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 1000;
+    background: #2E86AB;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+/* Estilos para Tablet y Celulares */
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: block; /* Aparece el botón */
+    }
+
+    .sidebar {
+        position: fixed;
+        left: -250px; /* Escondido a la izquierda */
+        transition: 0.3s;
+        z-index: 999;
+        height: 100vh;
+    }
+
+    /* Clase que activaremos con JS */
+    .sidebar.active {
+        left: 0;
+    }
+
+    .main-content {
+        margin-left: 0 !important;
+        width: 100%;
+    }
+}
+/* --- MEDIA QUERY PARA TABLET/MÓVIL --- */
+@media (max-width: 850px) {
+    .menu-toggle {
+        display: block !important;
+    }
+
+    /* Forzamos a la sidebar a salir de la pantalla */
+    .sidebar {
+        position: fixed !important;
+        left: -250px !important; 
+        top: 0;
+        bottom: 0;
+        width: 250px !important;
+        z-index: 2000 !important;
+        transition: left 0.3s ease-in-out !important;
+        display: block !important; /* Asegurar que no esté en none */
+    }
+
+    /* Cuando el JS añade 'active', la movemos a la vista */
+    .sidebar.active {
+        left: 0 !important;
+    }
+
+    .sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;   /* Cubre todo el ancho */
+        height: 100vh;  /* Cubre todo el alto */
+        background: rgba(0, 0, 0, 0.4); /* Color sutil oscuro */
+        z-index: 1500;  /* Por debajo de la sidebar (2000) pero sobre el contenido */
+        cursor: pointer;
+    }
+
+    /* El contenido principal debe ocupar todo el ancho */
+    .main-content {
+        margin-left: 0 !important;
+        width: 100% !important;
+        flex: 1; 
+        padding-top: 60px;
+    }
+
+    /* Evita que el contenedor padre (flex) aplaste el contenido */
+    .app-container {
+        display: block !important; 
+    }
+}
+/* Estilo para el contenedor de logout */
+.logout-item {
+    margin-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Estilo para el link de logout */
+.logout-link {
+    color: #ffb3b3 !important; /* Un rojo suave para que resalte */
+    font-weight: bold;
+}
+
+.logout-link:hover {
+    background: #c0392b !important; /* Rojo más intenso al pasar el mouse */
+    color: white !important;
+}

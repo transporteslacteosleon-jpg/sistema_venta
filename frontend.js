@@ -819,3 +819,52 @@ function limpiarMonto(id) {
     let limpio = rawValue.replace(',', '.'); 
     return parseFloat(limpio) || 0;
 }
+function toggleMenu(event) {
+    if (event) event.stopPropagation();
+    
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    
+    sidebar.classList.toggle('active');
+    
+    // Controlamos el overlay
+    if (sidebar.classList.contains('active')) {
+        overlay.style.display = 'block';
+    } else {
+        overlay.style.display = 'none';
+    }
+}
+
+// NUEVO: Cerrar el menú automáticamente al hacer clic en una opción
+document.addEventListener('click', (e) => {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    
+    // Si el menú está abierto y hacemos clic en un link del menú
+    if (sidebar.classList.contains('active') && e.target.classList.contains('nav-link')) {
+        sidebar.classList.remove('active');
+        overlay.style.display = 'none';
+    }
+});
+function handleLogout() {
+    if (confirm("¿Estás seguro de que deseas cerrar sesión?")) {
+        // 1. Ocultar la aplicación principal
+        document.getElementById('main-app').style.display = 'none';
+        
+        // 2. Mostrar el login
+        document.getElementById('login-overlay').style.display = 'flex';
+        
+        // 3. Limpiar los campos de texto del login
+        document.getElementById('login-user').value = '';
+        document.getElementById('login-pass').value = '';
+        document.getElementById('login-msg').innerHTML = '';
+
+        // 4. Si el menú estaba abierto (en tablet), lo cerramos
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar && sidebar.classList.contains('active')) {
+            toggleMenu();
+        }
+
+        console.log("Sesión cerrada correctamente.");
+    }
+}
