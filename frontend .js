@@ -729,7 +729,7 @@ async function obtenerProximoNumeroDocumento() {
 
     try {
         // 2. IMPORTANTE: Verifica que API no tenga una '/' al final para evitar //api//ventas
-        const res = await fetch(`${API}/ventas/proximo/${tipo}`);
+        const res = await fetch(`${API}/ventas/proximo-numero/${tipo}`);
         
         if (!res.ok) throw new Error("Ruta no encontrada en el servidor");
         
@@ -846,25 +846,25 @@ document.addEventListener('click', (e) => {
         overlay.style.display = 'none';
     }
 });
-function handleLogout() {
+// Asegúrate de que esta función NO esté dentro de otra función
+window.handleLogout = function() {
     if (confirm("¿Estás seguro de que deseas cerrar sesión?")) {
-        // 1. Ocultar la aplicación principal
-        document.getElementById('main-app').style.display = 'none';
-        
-        // 2. Mostrar el login
-        document.getElementById('login-overlay').style.display = 'flex';
-        
-        // 3. Limpiar los campos de texto del login
-        document.getElementById('login-user').value = '';
-        document.getElementById('login-pass').value = '';
-        document.getElementById('login-msg').innerHTML = '';
+        // 1. Limpiar datos de sesión
+        localStorage.clear();
+        sessionStorage.clear();
 
-        // 4. Si el menú estaba abierto (en tablet), lo cerramos
-        const sidebar = document.getElementById('sidebar');
-        if (sidebar && sidebar.classList.contains('active')) {
-            toggleMenu();
-        }
+        // 2. Cambiar visibilidad de las capas
+        const mainApp = document.getElementById('main-app');
+        const loginOverlay = document.getElementById('login-overlay');
+        
+        if (mainApp) mainApp.style.display = 'none';
+        if (loginOverlay) loginOverlay.style.display = 'flex';
 
-        console.log("Sesión cerrada correctamente.");
+        // 3. Limpiar inputs de login
+        if (document.getElementById('login-user')) document.getElementById('login-user').value = '';
+        if (document.getElementById('login-pass')) document.getElementById('login-pass').value = '';
+
+        // 4. Forzar recarga para limpiar memoria (Solución definitiva para Hosting)
+        window.location.reload();
     }
-}
+};
